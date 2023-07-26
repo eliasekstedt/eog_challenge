@@ -43,12 +43,13 @@ class Basic:
 
 
 
-class SimpleSet:
+class HotnCode:
     def __init_(self, map_path):
         self.datamap = pd.read_csv(map_path)
     
     def select_simple(self):
-        print(self.datamap)
+        categorical_columns = ['Srowth_stage', 'Samage', 'Season']
+        
 
 
 
