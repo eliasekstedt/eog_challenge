@@ -14,11 +14,11 @@ def main():
             'data_unlabeled':'data/test/'
             }
 
-    device = 'cuda'
+    device = 'cuda:0'
 
     # hyperparameters
     hparam = {'batch_size': 200,
-        'nr_epochs': 10,
+        'nr_epochs': 30,
         'architecture_name':'res18_unintegrated',
         'weight_decay': 0.0,
         'dropout_rate': 0.0}
@@ -37,6 +37,10 @@ def main():
     from util.Networks import Orinet
     model = Orinet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
     model.train_model(trainloader, testloader, hparam['nr_epochs'], runpath, device)
+
+    # plot results
+    from util.Tools import performance_plot
+    performance_plot(model, runpath)
 
 
 
