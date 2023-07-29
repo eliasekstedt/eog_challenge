@@ -1,6 +1,8 @@
 
 import matplotlib.pyplot as plt
 import os
+import pandas as pd
+import torch
 
 from datetime import datetime
 
@@ -18,7 +20,7 @@ def run_init(hparams, device):
             file.write(f'{param}\t: {hparams[param]}\n')
         file.write('\n')
         file.write(f'Using {device} device\n')
-        file.write('################# initiated run ##################')
+        file.write('################# initiated run ##################\n')
     # printing current state of logfile to terminal
     with open(runpath+'log.txt', 'r') as file:
         for_terminal = file.read()
@@ -37,30 +39,45 @@ def show(image, runpath='', title=''):
 
 
 def performance_plot(model, runpath):
-    epochs = range(1, len(model.tune_cost) + 1)
-    tunecol = 'tab:blue'
-    valcol = 'tab:red'
+    epochs = range(1, len(model.testcost) + 1)
+    traincol = 'tab:blue'
+    testcol = 'tab:red'
     # figure
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 8))
+    fig, ax1 = plt.subplots(1,figsize=(6, 8))
     # cost
-    ax1.plot(epochs, model.tune_cost, tunecol, label='train')
-    ax1.plot(epochs, model.val_cost, valcol, label='val')
+    ax1.plot(epochs, model.traincost, traincol, label='train')
+    ax1.plot(epochs, model.testcost, testcol, label='val')
     ax1.legend()
     ax1.set_xticks([])
     ax1.set_ylabel('Cost')
-    # accuracy
-    ax2.plot(epochs, model.tune_accuracy, tunecol, label='train')
-    ax2.plot(epochs, model.val_accuracy, valcol, label='val')
-    ax2.legend()
-    ax2.set_xlabel('Epoch')
-    ax2.set_ylabel('Accuracy')
     plt.tight_layout()
     plt.savefig(runpath+'performance'+'.png')
     plt.figure()
     plt.close('all')
     #plt.show()
 
+def create_submission(network, runpath, valloader, device):
+    network.load_state_dict(torch.load(runpath+'model.pth'))
+    preds, ids, fnames = None, None, None
+    network.eval()
+    with torch.no_grad():
+        for i, (batch_images, batch_context, batch_ids, batch_fnames) in enumerate(valloader):
+            print(i)
+            batch_images = batch_images.to(device)
+            batch_context = batch_context.to(device)
+            batch_outputs = network(batch_images, batch_context)
+            batch_outputs = tuple([el[0].item() for el in batch_outputs])
+            if preds is None and ids is None and fnames is None:
+                preds, ids, fnames = batch_outputs, batch_ids, batch_fnames
+            else:
+                preds = preds + batch_outputs
+                ids = ids + batch_ids
+                fnames = fnames + batch_fnames
 
+    submission = pd.DataFrame({'ID':ids, 'extent':preds})
+    submission['extent'] = submission['extent'].clip(lower=0, upper=100)
+    print(submission)
+    submission.to_csv(runpath+'SampleSubmission.csv', index=False)
 
 
 

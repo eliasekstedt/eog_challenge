@@ -74,3 +74,29 @@ class Res18_unintegrated(nn.Module):
         x = self.fc3(x)
         
         return x
+    
+class Res18_contextual(nn.Module):
+    def __init__(self):
+        print('using Res18_contextual architecture')
+        super(Res18_contextual, self).__init__()
+        nr_contextual_features = 16
+        self.resnet18 = torchvision.models.resnet18(pretrained=True)
+        nr_resnet18_infeatures = self.resnet18.fc.in_features
+        self.resnet18 = nn.Sequential(*list(self.resnet18.children())[:-1]) # removes the last layer
+        self.fc1 = nn.Linear(nr_resnet18_infeatures+nr_contextual_features, 256)
+        self.fc2 = nn.Linear(256, 128)
+        self.fc3 = nn.Linear(128, 1)
+        
+    def forward(self, x, context):
+        x = self.resnet18(x)
+        x = x.view(x.size(0), -1)
+        
+        # Concatenate the features from the CNN with the context
+        x = torch.cat((x, context), dim=1)
+        
+        # Pass through fully-connected layers
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        
+        return x
