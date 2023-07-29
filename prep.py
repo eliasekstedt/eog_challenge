@@ -1,5 +1,8 @@
 
-from util.Preppers import Basic as Prep
+from util.Preppers import Overview as Prep
 
-path = {'map':'csv/original/Train.csv'}
-Prep(path['map'])
+path = {'map':'csv/original/Train.csv',
+        'val':'csv/Val.csv'}
+
+
+Prep(path['map'], path['val'])
