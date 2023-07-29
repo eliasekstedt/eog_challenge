@@ -116,6 +116,8 @@ class ContextReader(Dataset):
         image = self.make_size_uniform(image=image, size=self.resizes)
         # skycrop
         image = image[:,image.shape[1]//2:, :]
+        #print(image.shape)
+        #show(image)
         return image, context, label, name
 
     def make_size_uniform(self, image, size):
@@ -124,6 +126,7 @@ class ContextReader(Dataset):
         image.requires_grad_(True)
         return image
 
+### current ###
 class EvalContextReader(Dataset):
     def __init__(self, path_csv, path_im, resizes):
         self.resizes = resizes

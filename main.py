@@ -23,7 +23,7 @@ def main():
             'architecture_name':'res18_contextual',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
-            'resizes':(128, 128)}
+            'resizes':(256, 128)}
 
     # loading data
     from util.Readers import ContextReader as Reader
