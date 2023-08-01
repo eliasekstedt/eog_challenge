@@ -6,10 +6,10 @@ import torch
 
 from datetime import datetime
 
-def run_init(hparams, device):
+def run_init(hparams, tag, device):
     # create directory for output files of current run
     current = datetime.now()
-    runpath = f'run/{str(current)[8:10]}_{str(current)[11:13]}_{str(current)[14:16]}_{str(current)[17:19]}/'
+    runpath = f'run/{tag}/{str(current)[8:10]}_{str(current)[11:13]}_{str(current)[14:16]}_{str(current)[17:19]}/'
     if not os.path.isdir(runpath):
         os.makedirs(runpath)
     # saving runlog to current run folder

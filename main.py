@@ -3,7 +3,14 @@
 import os
 from torch.utils.data import DataLoader
 
-import os
+# setting the seed
+import random
+random.seed(0)
+import numpy as np
+np.random.seed(0)
+import torch
+torch.manual_seed(0)
+
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
@@ -15,29 +22,32 @@ def main():
             'data_unlabeled':'data/test/'
             }
 
+    tag = 'main'
     device = 'cuda:0'
+
 
     # hyperparameters
     hparam = {'batch_size': 200,
             'nr_epochs': 15,
-            'architecture_name':'res18_contextual',
+            'architecture_name':'res18fc',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
-            'resizes':(256, 128)}
+            'resizes':(128, 128)}
 
     # loading data
-    from util.Readers import ContextReader as Reader
+    from util.Readers import Res18FCReader as Reader
+    #from util.Readers import SSCropReader as Reader
     trainset = Reader(path['trainmap'], path['data_labeled'], resizes=hparam['resizes'])
     testset = Reader(path['testmap'], path['data_labeled'], resizes=hparam['resizes'])
     trainloader = DataLoader(trainset, batch_size=hparam['batch_size'], shuffle=True)
-    testloader = DataLoader(testset, batch_size=hparam['batch_size'], shuffle=True)
+    testloader = DataLoader(testset, batch_size=hparam['batch_size'], shuffle=False)
 
     # begin
     from util.Tools import run_init
-    runpath = run_init(hparams=hparam, device=device)
+    runpath = run_init(hparams=hparam, tag=tag, device=device)
 
-    from util.Networks import ContextNet
-    model = ContextNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
+    from util.Networks import Res18FCNet
+    model = Res18FCNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
     model.train_model(trainloader, testloader, hparam['nr_epochs'], runpath, device)
 
     # plot results
@@ -45,10 +55,11 @@ def main():
     performance_plot(model, runpath)
 
     # generating submission file
-    from util.Readers import EvalContextReader
-    valset = EvalContextReader(path['valmap'], path['data_unlabeled'], resizes=hparam['resizes'])
+    from util.Readers import EvalRes18FCReader as EvalReader
+    #from util.Readers import EvalSSCropReader as EvalReader
+    valset = EvalReader(path['valmap'], path['data_unlabeled'], resizes=hparam['resizes'])
     valloader = DataLoader(valset, batch_size=hparam['batch_size'], shuffle=False)
-    network = ContextNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
+    network = Res18FCNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
 
     from util.Tools import create_submission
     create_submission(network, runpath, valloader, device)
