@@ -21,11 +21,10 @@ class Res18FC(nn.Module):
 
 class FCBlock(nn.Module):
     def __init__(self, nr_fc_in, dropout_rate):
-        print('FCblock')
         super(FCBlock, self).__init__()
         self.block = nn.Sequential(
-            nn.Dropout(dropout_rate),
             nn.Linear(nr_fc_in, 256),
+            nn.Dropout(dropout_rate),
             nn.ReLU(),
             nn.Linear(256, 128),
             nn.ReLU(),

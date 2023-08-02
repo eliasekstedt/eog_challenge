@@ -56,7 +56,15 @@ def performance_plot(model, runpath):
     plt.close('all')
     #plt.show()
 
-def create_submission(network, runpath, valloader, device):
+def create_submission(network, runpath, valloader, hparam, device):
+    def get_subfile_name(runpath, hparam):
+        subname_components = runpath
+        subname_components = [runpath]+[str(param)+'_' for param in hparam.values()]
+        subname = ''
+        for i in range(len(subname_components)):
+            subname = subname + subname_components[i]
+        return subname[:-1] + '.csv'
+    
     network.load_state_dict(torch.load(runpath+'model.pth'))
     preds, ids, fnames = None, None, None
     network.eval()
@@ -77,7 +85,8 @@ def create_submission(network, runpath, valloader, device):
     submission = pd.DataFrame({'ID':ids, 'extent':preds})
     submission['extent'] = submission['extent'].clip(lower=0, upper=100)
     print(submission)
-    submission.to_csv(runpath+'SampleSubmission.csv', index=False)
+    subfile_name = get_subfile_name(runpath, hparam)
+    submission.to_csv(subfile_name, index=False)
 
 
 

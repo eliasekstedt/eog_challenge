@@ -27,11 +27,11 @@ def main():
 
 
     # hyperparameters
-    hparam = {'batch_size': 200,
+    hparam = {'batch_size': 100,
             'nr_epochs': 15,
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
-            'dropout_rate': 0.0,
+            'dropout_rate': 0.2,
             'resizes':(128, 128)}
 
     # loading data
@@ -62,7 +62,7 @@ def main():
     network = Res18FCNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
 
     from util.Tools import create_submission
-    create_submission(network, runpath, valloader, device)
+    create_submission(network, runpath, valloader, hparam, device)
     print('predictions generated, run finished\n')
 
 
