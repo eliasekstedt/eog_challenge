@@ -14,8 +14,8 @@ torch.manual_seed(0)
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
-    do_rates = [0.05, 0.10, 0.15, 0.20, 0.25, 0.30]
-    for do_rate in do_rates:
+    param_factor_range = [5, 10, 15, 20]
+    for param_factor in param_factor_range:
         # folderstructure setup
         path = {'trainmap':'csv/trainsplit.csv',
                 'testmap':'csv/testsplit.csv',
@@ -24,16 +24,16 @@ def main():
                 'data_unlabeled':'data/test/'
                 }
 
-        tag = 'dropout_looper'
+        tag = 'param_looper_wd'
         device = 'cuda:0'
 
 
         # hyperparameters
         hparam = {'batch_size': 100,
-                'nr_epochs': 15,
+                'nr_epochs': 9,
                 'architecture_name':'res18fc',
-                'weight_decay': 1e-7,
-                'dropout_rate': do_rate,
+                'weight_decay': 1e-7*param_factor,
+                'dropout_rate': 0.0,
                 'resizes':(128, 128)}
 
         # loading data

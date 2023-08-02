@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
+import time
 import torch
 
 from datetime import datetime
@@ -48,7 +49,7 @@ def performance_plot(model, runpath):
     ax1.plot(epochs, model.traincost, traincol, label='train')
     ax1.plot(epochs, model.testcost, testcol, label='val')
     ax1.legend()
-    ax1.set_xticks([])
+    #ax1.set_xticks([])
     ax1.set_ylabel('Cost')
     plt.tight_layout()
     plt.savefig(runpath+'performance'+'.png')
@@ -64,13 +65,14 @@ def create_submission(network, runpath, valloader, hparam, device):
         for i in range(len(subname_components)):
             subname = subname + subname_components[i]
         return subname[:-1] + '.csv'
-    
+    tic = time.perf_counter()
     network.load_state_dict(torch.load(runpath+'model.pth'))
     preds, ids, fnames = None, None, None
     network.eval()
     with torch.no_grad():
         for i, (batch_images, batch_context, batch_ids, batch_fnames) in enumerate(valloader):
-            print(i)
+            if i%10 == 0:
+                print(i)
             batch_images = batch_images.to(device)
             batch_context = batch_context.to(device)
             batch_outputs = network(batch_images, batch_context)
@@ -87,6 +89,8 @@ def create_submission(network, runpath, valloader, hparam, device):
     print(submission)
     subfile_name = get_subfile_name(runpath, hparam)
     submission.to_csv(subfile_name, index=False)
+    toc = time.perf_counter()
+    print(f'sub-file created in {round(toc-tic, 2)} seconds\n')
 
 
 

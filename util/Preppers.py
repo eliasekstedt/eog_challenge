@@ -67,7 +67,7 @@ class HotnCode:
         categorical_columns = ['growth_stage', 'damage', 'season']
         return pd.get_dummies(df, columns=categorical_columns)
         
-    def split(self, ratio=0.5):
+    def split(self, ratio=0.8):
         self.datamap = self.datamap.sample(frac=1)
         wedge = int(len(self.datamap)*ratio)
         trainsplit = self.datamap[:wedge]

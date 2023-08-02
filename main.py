@@ -31,7 +31,7 @@ def main():
             'nr_epochs': 15,
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
-            'dropout_rate': 0.2,
+            'dropout_rate': 0.0,
             'resizes':(128, 128)}
 
     # loading data
