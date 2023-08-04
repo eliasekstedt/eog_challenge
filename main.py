@@ -27,17 +27,17 @@ def main():
 
 
     # hyperparameters
-    hparam = {'batch_size': 100,
-            'nr_epochs': 15,
+    hparam = {'batch_size': 128,
+            'nr_epochs': 20,
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
-            'resizes':(128, 128)}
+            'resizes':(256, 256)} # next
 
     # loading data
     from util.Readers import Res18FCReader as Reader
     #from util.Readers import SSCropReader as Reader
-    trainset = Reader(path['trainmap'], path['data_labeled'], resizes=hparam['resizes'])
+    trainset = Reader(path['trainmap'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
     testset = Reader(path['testmap'], path['data_labeled'], resizes=hparam['resizes'])
     trainloader = DataLoader(trainset, batch_size=hparam['batch_size'], shuffle=True)
     testloader = DataLoader(testset, batch_size=hparam['batch_size'], shuffle=False)

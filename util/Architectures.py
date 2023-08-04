@@ -19,15 +19,46 @@ class Res18FC(nn.Module):
         x = self.fcblock(torch.cat((x, context), dim=1))
         return x
 
+
 class FCBlock(nn.Module):
     def __init__(self, nr_fc_in, dropout_rate):
         super(FCBlock, self).__init__()
         self.block = nn.Sequential(
+            nn.BatchNorm1d(nr_fc_in),
             nn.Linear(nr_fc_in, 256),
-            nn.Dropout(dropout_rate),
             nn.ReLU(),
+            nn.BatchNorm1d(256),
             nn.Linear(256, 128),
             nn.ReLU(),
+            nn.BatchNorm1d(128),
+            nn.Dropout(dropout_rate),
+            nn.Linear(128, 1)
+        )
+    
+    def forward(self, x):
+        return self.block(x)
+
+
+"""
+"""
+class FCCBlock(nn.Module):
+    def __init__(self, nr_fc_in, dropout_rate):
+        super(FCBlock, self).__init__()
+        self.block = nn.Sequential(
+            nn.BatchNorm1d(nr_fc_in),
+            nn.Linear(nr_fc_in, nr_fc_in),
+            nn.ReLU(),
+            nn.BatchNorm1d(nr_fc_in),
+            nn.Linear(nr_fc_in, 256),
+            nn.ReLU(),
+            nn.BatchNorm1d(256),
+            nn.Linear(256, 256),
+            nn.ReLU(),
+            nn.BatchNorm1d(256),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.BatchNorm1d(128),
+            nn.Dropout(dropout_rate),
             nn.Linear(128, 1)
         )
     

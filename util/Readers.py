@@ -111,11 +111,16 @@ class EvalSSCropReader(Dataset):
         return image
 
 ### current ###
+transform = transforms.Compose([
+    transforms.RandomHorizontalFlip(),
+])
 class Res18FCReader(Dataset):
-    def __init__(self, path_csv, path_im, resizes):
-        self.resizes = resizes
-        self.path_im = path_im
+    def __init__(self, path_csv, path_im, resizes, augment=False):
         self.map = pd.read_csv(path_csv)
+        self.path_im = path_im
+        self.resizes = resizes
+        self.augment = augment
+        self.transform = transform
 
     def __len__(self):
         return len(self.map)
@@ -127,6 +132,8 @@ class Res18FCReader(Dataset):
         name = row['filename']
         image = Image.open(self.path_im+name)
         image = self.make_size_uniform(image=image, size=self.resizes)
+        if self.augment:
+            image = transform(image)
         # skycrop
         #image = image[:,image.shape[1]//2:, :]
         #print(image.shape)

@@ -2,6 +2,7 @@
 # external imports
 import os
 from torch.utils.data import DataLoader
+from torchvision.transforms import RandomHorizontalFlip
 
 # setting the seed
 import random
@@ -14,7 +15,8 @@ torch.manual_seed(0)
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
-    param_factor_range = [5, 10, 15, 20]
+    #param_factor_range = [0.0, 0.5, 0.10, 0.15, 0.20, 0.25]
+    param_factor_range = [2, 1, 0.5, 10]
     for param_factor in param_factor_range:
         # folderstructure setup
         path = {'trainmap':'csv/trainsplit.csv',
@@ -39,7 +41,7 @@ def main():
         # loading data
         from util.Readers import Res18FCReader as Reader
         #from util.Readers import SSCropReader as Reader
-        trainset = Reader(path['trainmap'], path['data_labeled'], resizes=hparam['resizes'])
+        trainset = Reader(path['trainmap'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
         testset = Reader(path['testmap'], path['data_labeled'], resizes=hparam['resizes'])
         trainloader = DataLoader(trainset, batch_size=hparam['batch_size'], shuffle=True)
         testloader = DataLoader(testset, batch_size=hparam['batch_size'], shuffle=False)
