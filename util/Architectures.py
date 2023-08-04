@@ -11,7 +11,7 @@ class Res18FC(nn.Module):
         self.resnet18 = torchvision.models.resnet18(pretrained=True)
         nr_fc_in = self.resnet18.fc.in_features + 16
         self.resnet18 = nn.Sequential(*list(self.resnet18.children())[:-1]) # removes the last layer
-        self.fcblock = FCBlock(nr_fc_in, dropout_rate)
+        self.fcblock = FCCBlock(nr_fc_in, dropout_rate)
         
     def forward(self, x, context):
         x = self.resnet18(x)
@@ -43,7 +43,8 @@ class FCBlock(nn.Module):
 """
 class FCCBlock(nn.Module):
     def __init__(self, nr_fc_in, dropout_rate):
-        super(FCBlock, self).__init__()
+        print('using complex version FCCBlock')
+        super(FCCBlock, self).__init__()
         self.block = nn.Sequential(
             nn.BatchNorm1d(nr_fc_in),
             nn.Linear(nr_fc_in, nr_fc_in),

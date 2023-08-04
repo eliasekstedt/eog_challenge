@@ -32,7 +32,7 @@ def main():
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
-            'resizes':(256, 256)} # next
+            'resizes':(256, 256)}
 
     # loading data
     from util.Readers import Res18FCReader as Reader
