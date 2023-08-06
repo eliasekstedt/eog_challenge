@@ -41,14 +41,14 @@ def show(image, runpath='', title=''):
 
 
 def performance_plot(model, runpath):
-    epochs = range(1, len(model.testcost) + 1)
+    epochs = range(1, len(model.s_testcost) + 1)
     traincol = 'tab:blue'
     testcol = 'tab:red'
     # figure
     fig, ax1 = plt.subplots(1,figsize=(6, 8))
     # cost
-    ax1.plot(epochs, model.traincost, traincol, label='train')
-    ax1.plot(epochs, model.testcost, testcol, label='val')
+    ax1.plot(epochs, model.s_traincost, traincol, label='train')
+    ax1.plot(epochs, model.s_testcost, testcol, label='val')
     ax1.set_ylim([4, 15])
     ax1.legend()
     #ax1.set_xticks([])
