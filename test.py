@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import torch
 
 
 
@@ -49,7 +50,9 @@ def test1():
     plt.show()
 
 def test2():
-    pass
+    c1 = torch.load('c1_tensor.pt')
+    print(c1)
+    print(torch.mean(c1))
 
 def test3():
     pass
@@ -67,7 +70,8 @@ def test7():
     pass
 
 def main():
-    test1()
+    test2()
+    #test1()
     #test0()
 
 

@@ -22,17 +22,18 @@ def main():
             'data_unlabeled':'data/test/'
             }
 
-    tag = 'main'
+    tag = 'testing'
     device = 'cuda:0'
 
 
     # hyperparameters
-    hparam = {'batch_size': 128,
-            'nr_epochs': 20,
+    hparam = {'batch_size': 256,
+            'nr_epochs': 10,
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
-            'resizes':(256, 256)}
+            'resizes':(128, 128),
+            'penalty':0}
 
     # loading data
     from util.Readers import Res18FCReader as Reader

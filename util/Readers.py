@@ -116,7 +116,7 @@ transform = transforms.Compose([
 ])
 class Res18FCReader(Dataset):
     def __init__(self, path_csv, path_im, resizes, augment=False):
-        self.map = pd.read_csv(path_csv)
+        self.map = pd.read_csv(path_csv)#.head(1000)
         self.path_im = path_im
         self.resizes = resizes
         self.augment = augment

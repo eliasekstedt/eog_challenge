@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import time
 import torch
+import seaborn as sns
 
 from datetime import datetime
 
@@ -93,7 +94,13 @@ def create_submission(network, runpath, valloader, hparam, device):
     toc = time.perf_counter()
     print(f'sub-file created in {round(toc-tic, 2)} seconds\n')
 
-
+def scatter_matrix(df, metric):
+    sns.set(style="ticks")
+    sns.pairplot(df)
+    plt.savefig(f'scatter_matrix_{metric}.png')
+    plt.figure()
+    plt.close('all')
+    #plt.show()
 
 
 
