@@ -19,6 +19,13 @@ class CustomLoss(nn.Module):
         self.eps = eps
         
     def forward(self,preds,y):
-        loss = torch.sqrt(torch.mean(y * (y - preds)**2 + self.eps))
-        return loss
+        #loss = torch.sqrt(torch.mean(y * (y - preds)**2 + self.eps))
+        #loss = torch.sqrt(self.mse(preds,y) + self.eps)*(1+(y>0))
+        squared_diff = (preds - y) ** 2
+        weights = torch.where(y > 0, 
+                            torch.tensor(2).to(y.to('cuda:0')), 
+                            torch.tensor(1.0).to(y.device))
+        weighted_mse = torch.mean(weights * squared_diff)
+        return torch.sqrt(weighted_mse)
+
 

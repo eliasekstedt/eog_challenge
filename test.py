@@ -93,7 +93,10 @@ def test4():
     testloader = DataLoader(testset, batch_size=hparam['batch_size'], shuffle=False)
     network = Res18FCNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
     from util.Evaluation_tools import create_pseudo_submission
+    from util.Evaluation_tools import create_assembly
     create_pseudo_submission(network, runpath, testloader, device)
+    create_assembly()
+
 
 def test5():
     pass

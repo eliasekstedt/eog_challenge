@@ -115,8 +115,9 @@ transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
 ])
 class Res18FCReader(Dataset):
-    def __init__(self, path_csv, path_im, resizes, augment=False):
-        self.map = pd.read_csv(path_csv)#.head(1000)
+    def __init__(self, path_csv, path_im, resizes, augment=False, eval=False):
+        self.eval = eval
+        self.map = pd.read_csv(path_csv).head(5300)
         self.path_im = path_im
         self.resizes = resizes
         self.augment = augment
@@ -127,18 +128,19 @@ class Res18FCReader(Dataset):
     
     def __getitem__(self, idx):
         row = self.map.iloc[idx]
-        context = torch.tensor(self.map.iloc[idx, 3:].tolist(), dtype=torch.float32)
-        label = torch.tensor([row['extent']], dtype=torch.float32)
+        nr_primer_cols = len(self.map.columns)-16
+        context = torch.tensor(self.map.iloc[idx, nr_primer_cols:].tolist(), dtype=torch.float32)
         name = row['filename']
         image = Image.open(self.path_im+name)
         image = self.make_size_uniform(image=image, size=self.resizes)
-        if self.augment:
-            image = transform(image)
-        # skycrop
-        #image = image[:,image.shape[1]//2:, :]
-        #print(image.shape)
-        #show(image)
-        return image, context, label, name
+        if self.eval:
+            id = row['ID']
+            return image, context, id, name
+        else:
+            label = torch.tensor([row['extent']], dtype=torch.float32)
+            if self.augment:
+                image = transform(image)
+            return image, context, label, name
 
     def make_size_uniform(self, image, size):
         resize = transforms.Compose([transforms.Resize(size), transforms.ToTensor()])
@@ -147,6 +149,7 @@ class Res18FCReader(Dataset):
         return image
 
 ### current ###
+"""
 class EvalRes18FCReader(Dataset):
     def __init__(self, path_csv, path_im, resizes):
         self.resizes = resizes
@@ -172,6 +175,5 @@ class EvalRes18FCReader(Dataset):
         image = resize(image)
         image.requires_grad_(True)
         return image
-
-
+"""
 

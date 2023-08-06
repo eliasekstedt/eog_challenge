@@ -22,13 +22,13 @@ def main():
             'data_unlabeled':'data/test/'
             }
 
-    tag = 'testing'
+    tag = 'finding_weight_penalty'
     device = 'cuda:0'
 
 
     # hyperparameters
-    hparam = {'batch_size': 256,
-            'nr_epochs': 10,
+    hparam = {'batch_size': 128,
+            'nr_epochs': 9,
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
@@ -51,20 +51,29 @@ def main():
     model = Res18FCNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
     model.train_model(trainloader, testloader, hparam['nr_epochs'], runpath, device)
 
-    # plot results
+    # evaluation
+    valset = Reader(path['valmap'], path['data_unlabeled'], resizes=hparam['resizes'], eval=True)
+    testvalset = Reader(path['testmap'], path['data_labeled'], resizes=hparam['resizes'], eval=True)
+    valloader = DataLoader(valset, batch_size=hparam['batch_size'], shuffle=False)
+    testvalloader = DataLoader(testvalset, batch_size=hparam['batch_size'], shuffle=False)
+    from util.Evaluation_tools import Evaluation
+    Evaluation(hparam, model, testvalloader, valloader, runpath)
+
     from util.Tools import performance_plot
     performance_plot(model, runpath)
 
+    """
     # generating submission file
-    from util.Readers import EvalRes18FCReader as EvalReader
+    #from util.Readers import EvalRes18FCReader as EvalReader
     #from util.Readers import EvalSSCropReader as EvalReader
-    valset = EvalReader(path['valmap'], path['data_unlabeled'], resizes=hparam['resizes'])
+    valset = Reader(path['valmap'], path['data_unlabeled'], resizes=hparam['resizes'], eval=True)
     valloader = DataLoader(valset, batch_size=hparam['batch_size'], shuffle=False)
     network = Res18FCNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate']).to(device)
 
     from util.Tools import create_submission
     create_submission(network, runpath, valloader, hparam, device)
     print('predictions generated, run finished\n')
+    """
 
 
 if __name__ == '__main__':

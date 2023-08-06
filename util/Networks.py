@@ -8,7 +8,7 @@ from util.Special import CustomLoss
 class Res18FCNet(nn.Module):
     def __init__(self, architecture_name=None, weight_decay=0, dropout_rate=0):
         super(Res18FCNet, self).__init__()
-        self.loss_fn = RMSELoss() #CustomLoss()
+        self.loss_fn = CustomLoss()
         self.s_loss_fn = RMSELoss()
         self.traincost, self.testcost = [], []
         self.s_traincost, self.s_testcost = [], []
