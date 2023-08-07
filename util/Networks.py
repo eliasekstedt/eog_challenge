@@ -61,7 +61,7 @@ class Res18FCNet(nn.Module):
 
     def save_model(self, runpath):
         save_info = ''
-        if len(self.s_testcost) >= 3:
+        if len(self.s_testcost) >= 5:
             new_cost = self.s_testcost[-1]
             sorted_costs = sorted(self.s_testcost)
             if new_cost == sorted_costs[0]:
@@ -73,6 +73,12 @@ class Res18FCNet(nn.Module):
             elif new_cost == sorted_costs[2]:
                 torch.save(self.state_dict(), runpath+'model3.pth')
                 save_info = f'\tsaved3!'
+            elif new_cost == sorted_costs[3]:
+                torch.save(self.state_dict(), runpath+'model4.pth')
+                save_info = f'\tsaved4!'
+            elif new_cost == sorted_costs[4]:
+                torch.save(self.state_dict(), runpath+'model5.pth')
+                save_info = f'\tsaved5!'
         return save_info
 
     def log_epoch(self, header, runpath, nr_epochs):

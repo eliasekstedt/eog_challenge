@@ -92,8 +92,8 @@ class Evaluation:
 
     def create_confusion_matrix(self):
         assembly = pd.read_csv(self.runpath+'assembly.csv')
-        assembly = assembly[assembly['extent'] != 0]
-        assembly = assembly[assembly['rpred'] != 0]
+        #assembly = assembly[assembly['extent'] != 0]
+        #assembly = assembly[assembly['rpred'] != 0]
         extent_labels = np.sort(assembly["extent"].unique())
         rpred_labels = np.sort(assembly["rpred"].unique())
         print(f'{extent_labels}')
