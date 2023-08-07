@@ -14,8 +14,8 @@ class Evaluation:
         self.testloader = testloader
         self.valloader = valloader
         self.runpath = runpath
+        self.create_submission('cuda')
         self.create_testresults_csv('cuda')
-        #self.create_submission('cuda')
         self.create_assembly('csv/testsplit.csv')
         self.create_confusion_matrix()
     
@@ -23,12 +23,11 @@ class Evaluation:
     def create_testresults_csv(self, device):
         print('creating testresults file')
         tic = time.perf_counter()
+        self.network.load_state_dict(torch.load(self.runpath+'model1.pth'))
         preds, labels, fnames = None, None, None
         self.network.eval()
         with torch.no_grad():
-            for i, (batch_images, batch_context, batch_labels, batch_fnames) in enumerate(self.testloader):
-                #if i%10 == 0:
-                #    print(i)
+            for batch_images, batch_context, batch_labels, batch_fnames in self.testloader:
                 batch_images = batch_images.to(device)
                 batch_context = batch_context.to(device)
                 batch_outputs = self.network(batch_images, batch_context)
@@ -57,13 +56,11 @@ class Evaluation:
                 subname = subname + subname_components[i]
             return subname[:-1] + '.csv'
         tic = time.perf_counter()
-        self.network.load_state_dict(torch.load(self.runpath+'model.pth'))
+        self.network.load_state_dict(torch.load(self.runpath+'model1.pth'))
         preds, ids, fnames = None, None, None
         self.network.eval()
         with torch.no_grad():
-            for i, (batch_images, batch_context, batch_ids, batch_fnames) in enumerate(self.valloader):
-                #if i%10 == 0:
-                #    print(i)
+            for batch_images, batch_context, batch_ids, batch_fnames in self.valloader:
                 batch_images = batch_images.to(device)
                 batch_context = batch_context.to(device)
                 batch_outputs = self.network(batch_images, batch_context)

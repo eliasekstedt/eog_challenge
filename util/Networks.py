@@ -6,9 +6,9 @@ from util.Special import RMSELoss
 from util.Special import CustomLoss
 
 class Res18FCNet(nn.Module):
-    def __init__(self, architecture_name=None, weight_decay=0, dropout_rate=0):
+    def __init__(self, architecture_name=None, weight_decay=0, dropout_rate=0, penalty=None):
         super(Res18FCNet, self).__init__()
-        self.loss_fn = CustomLoss()
+        self.loss_fn = CustomLoss(penalty=penalty)
         self.s_loss_fn = RMSELoss()
         self.traincost, self.testcost = [], []
         self.s_traincost, self.s_testcost = [], []
@@ -59,12 +59,30 @@ class Res18FCNet(nn.Module):
         self.testcost += [cost]
         self.s_testcost += [s_cost]
 
+    def save_model(self, runpath):
+        save_info = ''
+        if len(self.s_testcost) >= 3:
+            new_cost = self.s_testcost[-1]
+            sorted_costs = sorted(self.s_testcost)
+            if new_cost == sorted_costs[0]:
+                torch.save(self.state_dict(), runpath+'model1.pth')
+                save_info = f'\tsaved1!'
+            elif new_cost == sorted_costs[1]:
+                torch.save(self.state_dict(), runpath+'model2.pth')
+                save_info = f'\tsaved2!'
+            elif new_cost == sorted_costs[2]:
+                torch.save(self.state_dict(), runpath+'model3.pth')
+                save_info = f'\tsaved3!'
+        return save_info
+
     def log_epoch(self, header, runpath, nr_epochs):
         epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}\t\t{round(self.s_traincost[-1], 4)}\t\t{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
         # save model if current best (in terms of test accuracy)
-        if self.s_testcost[-1] == min(self.s_testcost):
-            torch.save(self.state_dict(), runpath+'model.pth')
-            epoch_info = epoch_info + f'\tsaved!'
+        #if self.s_testcost[-1] == min(self.s_testcost):
+        #    torch.save(self.state_dict(), runpath+'model.pth')
+        #    epoch_info = epoch_info + f'\tsaved!'
+        save_info = self.save_model(runpath)
+        epoch_info = epoch_info + save_info
         # print and log current epoch info
         print(epoch_info)
         with open(runpath + 'log.txt', 'a') as file:
