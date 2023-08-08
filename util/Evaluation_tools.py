@@ -23,7 +23,7 @@ class Evaluation:
     def create_testresults_csv(self, device):
         print('creating testresults file')
         tic = time.perf_counter()
-        self.network.load_state_dict(torch.load(self.runpath+'model1.pth'))
+        self.network.load_state_dict(torch.load(self.runpath+'model21.pth'))
         preds, labels, fnames = None, None, None
         self.network.eval()
         with torch.no_grad():
@@ -56,7 +56,7 @@ class Evaluation:
                 subname = subname + subname_components[i]
             return subname[:-1] + '.csv'
         tic = time.perf_counter()
-        self.network.load_state_dict(torch.load(self.runpath+'model1.pth'))
+        self.network.load_state_dict(torch.load(self.runpath+'model21.pth'))
         preds, ids, fnames = None, None, None
         self.network.eval()
         with torch.no_grad():

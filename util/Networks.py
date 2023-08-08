@@ -82,13 +82,18 @@ class Res18FCNet(nn.Module):
         return save_info
 
     def log_epoch(self, header, runpath, nr_epochs):
+        current_epoch = len(self.testcost)
         epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}\t\t{round(self.s_traincost[-1], 4)}\t\t{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
         # save model if current best (in terms of test accuracy)
         #if self.s_testcost[-1] == min(self.s_testcost):
         #    torch.save(self.state_dict(), runpath+'model.pth')
         #    epoch_info = epoch_info + f'\tsaved!'
-        save_info = self.save_model(runpath)
+        save_info = ''
+        if current_epoch > 10:#nr_epochs//2:
+            save_info = f'\tsave{current_epoch}!'
+            torch.save(self.state_dict(), runpath+f'model{current_epoch}.pth')
         epoch_info = epoch_info + save_info
+        #save_info = self.save_model(runpath)
         # print and log current epoch info
         print(epoch_info)
         with open(runpath + 'log.txt', 'a') as file:

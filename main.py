@@ -28,30 +28,39 @@ def main():
 
     # hyperparameters
     hparam = {'batch_size': 128,
-            'nr_epochs': 20,
+            'nr_epochs': 30,
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
-            'dropout_rate': 0.1,
+            'dropout_rate': 0.0,
             'resizes': (128, 128),
             'penalty': 1}
 
+    """
     # loading data
-    while True:
-        from util.Readers import Res18FCReader as Reader
-        #from util.Readers import SSCropReader as Reader
-        trainset = Reader(path['trainmap'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
-        testset = Reader(path['testmap'], path['data_labeled'], resizes=hparam['resizes'])
-        trainloader = DataLoader(trainset, batch_size=hparam['batch_size'], shuffle=True)
-        testloader = DataLoader(testset, batch_size=hparam['batch_size'], shuffle=False)
+    """
+    from util.Readers import Res18FCReader as Reader
+    """
+    #from util.Readers import SSCropReader as Reader
+    trainset = Reader(path['trainmap'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
+    testset = Reader(path['testmap'], path['data_labeled'], resizes=hparam['resizes'])
+    trainloader = DataLoader(trainset, batch_size=hparam['batch_size'], shuffle=True)
+    testloader = DataLoader(testset, batch_size=hparam['batch_size'], shuffle=False)
+    """
 
+    if True:
+        """
         # begin
         from util.Tools import run_init
         runpath = run_init(hparams=hparam, tag=tag, device=device)
 
+        """
+        runpath = 'run/consistency_runs/07_16_42_47/'
         from util.Networks import Res18FCNet
         model = Res18FCNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate'], hparam['penalty']).to(device)
+        """
         #model.load_state_dict(torch.load('run/finding_weight_penalty/06_16_52_05/'+'model.pth'))
         model.train_model(trainloader, testloader, hparam['nr_epochs'], runpath, device)
+        """
 
         # evaluation
         valset = Reader(path['valmap'], path['data_unlabeled'], resizes=hparam['resizes'], eval=True)
