@@ -99,7 +99,35 @@ def test4():
 
 
 def test5():
-    pass
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import PyCircos
+    #from PyCircos import *
+
+    def do_circos():
+        # Generate some sample data
+        chromosomes = ["chr1", "chr2", "chr3", "chr4", "chr5"]
+        sizes = [100, 120, 130, 110, 105]
+        gc_content = [
+            np.random.rand(100) for _ in range(5)
+        ]
+
+        # Initialize PyCircos
+        gcircle = Gcircle()
+
+        # Add chromosomes to the circle
+        for i, chrom in enumerate(chromosomes):
+            gcircle.add_locus(Locus(chrom, 0, sizes[i], 0.8))
+
+        # Add the GC content as a histogram track
+        for i, chrom in enumerate(chromosomes):
+            gcircle.add_track(HistogramTrack(chrom, gc_content[i], inner_radius=0.5, outer_radius=0.8, color="green"))
+
+        # Plot the Circos plot
+        fig, ax = plt.subplots(figsize=(8, 8))
+        ax.set_aspect("equal")
+        gcircle.draw(ax)
+        plt.show()
 
 def test6():
     pass
