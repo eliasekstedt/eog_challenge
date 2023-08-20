@@ -37,10 +37,10 @@ def main():
 
     # loading data
     from util.Readers import Res18FCReader as Reader
-    fold0_set = Reader(path['fold0'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
-    fold0_loader = DataLoader(fold0_set, batch_size=hparam['batch_size'], shuffle=True)
-    fold1_set = Reader(path['fold1'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
-    fold1_loader = DataLoader(fold1_set, batch_size=hparam['batch_size'], shuffle=True)
+    set0 = Reader(path['fold0'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
+    loader0 = DataLoader(set0, batch_size=hparam['batch_size'], shuffle=True)
+    set1 = Reader(path['fold1'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
+    loader1 = DataLoader(set1, batch_size=hparam['batch_size'], shuffle=True)
 
     # begin
     from util.Tools import run_init
@@ -48,12 +48,12 @@ def main():
 
     from util.Networks import Res18FCNet
     from util.Tools import performance_plot
-    fold0_model = Res18FCNet(0, hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate'], hparam['penalty']).to(device)
-    fold0_model.train_model(trainloader=fold0_loader, testloader=fold0_loader, nr_epochs=hparam['nr_epochs'], runpath=runpath, device=device)
-    performance_plot(fold0_model, runpath)
-    fold1_model = Res18FCNet(0, hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate'], hparam['penalty']).to(device)
-    fold1_model.train_model(trainloader=fold1_loader, testloader=fold1_loader, nr_epochs=hparam['nr_epochs'], runpath=runpath, device=device)
-    performance_plot(fold1_model, runpath)
+    model0 = Res18FCNet(0, hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate'], hparam['penalty']).to(device)
+    model0.train_model(trainloader=loader0, testloader=loader1, nr_epochs=hparam['nr_epochs'], runpath=runpath, device=device)
+    performance_plot(model0, runpath)
+    model1 = Res18FCNet(1, hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate'], hparam['penalty']).to(device)
+    model1.train_model(trainloader=loader1, testloader=loader0, nr_epochs=hparam['nr_epochs'], runpath=runpath, device=device)
+    performance_plot(model1, runpath)
 
     # generating submission file
     #from util.Readers import Res18FCReader as EvalReader
