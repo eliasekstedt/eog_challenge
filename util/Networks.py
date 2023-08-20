@@ -6,8 +6,9 @@ from util.Special import RMSELoss
 from util.Special import CustomLoss
 
 class Res18FCNet(nn.Module):
-    def __init__(self, architecture_name=None, weight_decay=0, dropout_rate=0, penalty=None):
+    def __init__(self, fold=None, architecture_name=None, weight_decay=0, dropout_rate=0, penalty=None):
         super(Res18FCNet, self).__init__()
+        self.fold = fold
         self.loss_fn = CustomLoss(penalty=penalty)
         self.s_loss_fn = RMSELoss()
         self.traincost, self.testcost = [], []
@@ -59,6 +60,39 @@ class Res18FCNet(nn.Module):
         self.testcost += [cost]
         self.s_testcost += [s_cost]
 
+    def log_epoch(self, header, runpath, nr_epochs):
+        epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}\t\t{round(self.s_traincost[-1], 4)}\t\t{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
+        # save model if current best
+        if self.s_testcost[-1] == min(self.s_testcost):
+            torch.save(self.state_dict(), runpath+'model'+str(self.fold)+'.pth')
+            epoch_info = epoch_info + f'\tsaved!'
+        # print and log current epoch info
+        print(epoch_info)
+        with open(runpath + 'log.txt', 'a') as file:
+            if len(self.testcost) <= 1:
+                file.write(header+'\n')
+            file.write(epoch_info+'\n')
+
+    def train_model(self, trainloader, testloader, nr_epochs, runpath, device):
+        print(f'beginning training fold{self.fold} {str(datetime.now())[11:19]}')
+        header = f'epoch\t\tCOST\t\tcost\t\tS_COST\t\ts_cost\t\ttime'
+        print(header)
+        for i in range(1, nr_epochs+1):
+            self.train_epoch(trainloader, device)
+            self.test_epoch(testloader, device)
+            self.log_epoch(header, runpath, nr_epochs)
+
+
+
+
+
+#save_info = ''
+#if current_epoch > 10:#nr_epochs//2:
+#    save_info = f'\tsave{current_epoch}!'
+#    torch.save(self.state_dict(), runpath+f'model{current_epoch}.pth')
+#epoch_info = epoch_info + save_info
+#save_info = self.save_model(runpath)
+"""
     def save_model(self, runpath):
         save_info = ''
         if len(self.s_testcost) >= 5:
@@ -81,44 +115,7 @@ class Res18FCNet(nn.Module):
                 save_info = f'\tsaved5!'
         return save_info
 
-    def log_epoch(self, header, runpath, nr_epochs):
-        current_epoch = len(self.testcost)
-        epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}\t\t{round(self.s_traincost[-1], 4)}\t\t{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
-        # save model if current best (in terms of test accuracy)
-        #if self.s_testcost[-1] == min(self.s_testcost):
-        #    torch.save(self.state_dict(), runpath+'model.pth')
-        #    epoch_info = epoch_info + f'\tsaved!'
-        save_info = ''
-        if current_epoch > 10:#nr_epochs//2:
-            save_info = f'\tsave{current_epoch}!'
-            torch.save(self.state_dict(), runpath+f'model{current_epoch}.pth')
-        epoch_info = epoch_info + save_info
-        #save_info = self.save_model(runpath)
-        # print and log current epoch info
-        print(epoch_info)
-        with open(runpath + 'log.txt', 'a') as file:
-            if len(self.testcost) <= 1:
-                file.write(header+'\n')
-            file.write(epoch_info+'\n')
-
-    def train_model(self, trainloader, testloader, nr_epochs, runpath, device):
-        print(f'beginning training {str(datetime.now())[11:19]}')
-        header = f'epoch\t\tCOST\t\tcost\t\tS_COST\t\ts_cost\t\ttime'
-        print(header)
-        for i in range(1, nr_epochs+1):
-            self.train_epoch(trainloader, device)
-            self.test_epoch(testloader, device)
-            self.log_epoch(header, runpath, nr_epochs)
-
-
-
-
-
-
-
-
-
-
+"""
 
 
 

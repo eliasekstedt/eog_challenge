@@ -1,0 +1,6 @@
+id,chr_len,label,pred
+label,100,10,10
+label,100,20,20
+pred,100,30,30
+pred,100,90,90
+

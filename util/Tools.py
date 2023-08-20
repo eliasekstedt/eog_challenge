@@ -29,6 +29,12 @@ def run_init(hparams, tag, device):
     print(for_terminal)
     return runpath
 
+def to_log(runpath, messages):
+    with open(runpath+'log.txt', 'a') as file:
+        for message in messages:
+            file.write(message+'\n')
+
+
 def show(image, runpath='', title=''):
     plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
     #plt.title(title)
@@ -38,7 +44,6 @@ def show(image, runpath='', title=''):
     #plt.figure()
     #plt.close('all')
     plt.show()
-
 
 def performance_plot(model, runpath):
     epochs = range(1, len(model.s_testcost) + 1)
@@ -54,7 +59,7 @@ def performance_plot(model, runpath):
     #ax1.set_xticks([])
     ax1.set_ylabel('Cost')
     plt.tight_layout()
-    plt.savefig(runpath+'performance'+'.png')
+    plt.savefig(runpath+'fold'+str(model.fold)+'performance'+'.png')
     plt.figure()
     plt.close('all')
     #plt.show()

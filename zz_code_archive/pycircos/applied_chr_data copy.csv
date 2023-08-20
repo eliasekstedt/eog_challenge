@@ -1,0 +1,6 @@
+id,band_start_pos,band_end_pos,chr_end
+label,1,2,100
+label,2,3,100
+prediction,3,4,100
+prediction,4,5,100
+

@@ -99,35 +99,7 @@ def test4():
 
 
 def test5():
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import PyCircos
-    #from PyCircos import *
-
-    def do_circos():
-        # Generate some sample data
-        chromosomes = ["chr1", "chr2", "chr3", "chr4", "chr5"]
-        sizes = [100, 120, 130, 110, 105]
-        gc_content = [
-            np.random.rand(100) for _ in range(5)
-        ]
-
-        # Initialize PyCircos
-        gcircle = Gcircle()
-
-        # Add chromosomes to the circle
-        for i, chrom in enumerate(chromosomes):
-            gcircle.add_locus(Locus(chrom, 0, sizes[i], 0.8))
-
-        # Add the GC content as a histogram track
-        for i, chrom in enumerate(chromosomes):
-            gcircle.add_track(HistogramTrack(chrom, gc_content[i], inner_radius=0.5, outer_radius=0.8, color="green"))
-
-        # Plot the Circos plot
-        fig, ax = plt.subplots(figsize=(8, 8))
-        ax.set_aspect("equal")
-        gcircle.draw(ax)
-        plt.show()
+    print(list(range(100))[::10])
 
 def test6():
     pass
@@ -136,7 +108,8 @@ def test7():
     pass
 
 def main():
-    test4()
+    test5()
+    #test4()
     #test3()
     #test2()
     #test1()
@@ -152,3 +125,64 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################
+#################################################
+#################################################
+#################################################
+#################################################
+#################################################
+"""
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import pycircos
+Garc = pycircos.Garc
+Gcircle = pycircos.Gcircle
+
+def get_circle_garc(df):
+    circle = Gcircle(figsize=(8,8))
+    circle = Gcircle(figsize=(8,8))
+    for i in range(len(df)):
+        name = df.iloc[i, 0]
+        name = df.iloc[i, 0]
+        length = df.iloc[i, -1]
+        length = df.iloc[i, -1]
+        arc = Garc(arc_id=name, size=length, interspace=2, raxis_range=(935, 935), labelposition=80, label_visible=True)
+        arc = Garc(arc_id=name, size=length, interspace=2, raxis_range=(935, 985), labelposition=80, label_visible=True)
+        circle.add_garc(arc)
+        circle.add_garc(arc) 
+
+    circle.set_garcs(-65,245)
+    circle.set_garcs(-65,245) 
+
+    for arc_id in circle.garc_dict:
+        circle.tickplot(arc_id, raxis_range=(985,1000), tickinterval=20000000, ticklabels=None)
+        circle.tickplot(arc_id, raxis_range=(985,1000), tickinterval=20000000, ticklabels=None)
+    return circle
+
+
+def get_circle(df):
+    for i in range(len(df)):
+
+
+    for arc_id in circle.garc_dict:
+    return circle
+"""
