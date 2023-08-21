@@ -16,8 +16,8 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     # folderstructure setup
-    path = {'fold0':'csv/fold_0.csv',
-            'fold1':'csv/fold_1.csv',
+    path = {'fold_0':'csv/fold_0.csv',
+            'fold_1':'csv/fold_1.csv',
             'valmap':'csv/Val.csv',
             'data_labeled':'data/train/',
             'data_unlabeled':'data/test/'
@@ -28,7 +28,7 @@ def main():
 
     # hyperparameters
     hparam = {'batch_size': 100,
-            'nr_epochs': 12,
+            'nr_epochs': 25,
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
