@@ -18,7 +18,7 @@ class Res18FCNet(nn.Module):
             from util.Architectures import Res18FC
             self.architecture = Res18FC(dropout_rate)
         else:
-            print('architecture not defined')
+            print(f'architecture {architecture_name} is not defined')
             1/0
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
 

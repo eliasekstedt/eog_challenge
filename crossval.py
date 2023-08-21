@@ -16,8 +16,8 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     # folderstructure setup
-    path = {'fold0':'csv/fold0.csv',
-            'fold1':'csv/fold1.csv',
+    path = {'fold0':'csv/fold_0.csv',
+            'fold1':'csv/fold_1.csv',
             'valmap':'csv/Val.csv',
             'data_labeled':'data/train/',
             'data_unlabeled':'data/test/'
@@ -37,9 +37,9 @@ def main():
 
     # loading data
     from util.Readers import Res18FCReader as Reader
-    set0 = Reader(path['fold0'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
+    set0 = Reader(path['fold_0'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
     loader0 = DataLoader(set0, batch_size=hparam['batch_size'], shuffle=True)
-    set1 = Reader(path['fold1'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
+    set1 = Reader(path['fold_1'], path['data_labeled'], resizes=hparam['resizes'], augment=True)
     loader1 = DataLoader(set1, batch_size=hparam['batch_size'], shuffle=True)
 
     # begin
