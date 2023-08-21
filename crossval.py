@@ -28,7 +28,7 @@ def main():
 
     # hyperparameters
     hparam = {'batch_size': 100,
-            'nr_epochs': 3,
+            'nr_epochs': 12,
             'architecture_name':'res18fc',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
