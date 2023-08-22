@@ -78,7 +78,7 @@ class Res18FCNet(nn.Module):
             file.write(epoch_info+'\n')
 
     def train_model(self, trainloader, testloader, nr_epochs, runpath, device):
-        print(f'beginning training fold{self.fold} {str(datetime.now())[11:19]}')
+        print(f'beginning training fold_{self.fold} {str(datetime.now())[11:19]}')
         header = f'epoch\t\tCOST\t\tcost\t\tS_COST\t\ts_cost\t\ttime'
         print(header)
         for i in range(1, nr_epochs+1):
@@ -86,7 +86,7 @@ class Res18FCNet(nn.Module):
             self.test_epoch(testloader, device)
             self.log_epoch(header, runpath, nr_epochs)
             if self.patience <= 0:
-                i = nr_epochs + 1
+                break
                 print('no more patience\n')
             
 

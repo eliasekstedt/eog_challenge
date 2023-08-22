@@ -156,8 +156,48 @@ def test8():
     plt.bar(range(len(colsumdiff)), colsumdiff)
     plt.show()
 
+def test9():
+    lim = 0.9
+    method = 2
+    nr_epochs = 20
+    for i in range(1, nr_epochs + 1):
+        rn = np.random.normal(0, .5)
+        print(i, rn)
+        if method == 0 and (rn < -lim or rn > lim):
+            print('method 1: break')
+            break
+        if method == 1 and (rn < -lim or rn > lim):
+            print('method 2: continue')
+            continue
+        if method == 2 and (rn < -lim or rn > lim):
+            print('method 3: nr_epochs + 1')
+            i = nr_epochs + 1
+    
+    print('\nif this plays the mashine continues with what comes next')
+
+
+
+
+def test10():
+    pass
+
+def test11():
+    pass
+
+def test12():
+    pass
+
+def test13():
+    pass
+
+def test14():
+    pass
+
+
+
 def main():
-    test8()
+    test9()
+    #test8()
     #test7()
     #test6()
     #test5()
