@@ -13,19 +13,14 @@ class CrossEvaluator:
         set_1 = reader(path['fold_1'], path['data_labeled'], resizes=hparam['resizes'], augment=False, eval=True)
         loader_1 = DataLoader(set_1, batch_size=hparam['batch_size'], shuffle=False)
         # do crosswise evaluation
-        #preddata_0 = pd.read_csv('eval_fold_0.csv')
-        #preddata_1 = pd.read_csv('eval_fold_1.csv')
         preddata_0 = self.evaluate(models[1], loader_0, device)
         preddata_1 = self.evaluate(models[0], loader_1, device)
         # assembling dataframes
-        evaldata = self.assemble_evaldata(path, preddata_0, preddata_1)
+        self.evaldata = self.assemble_evaldata(path, preddata_0, preddata_1)
+        self.rmse = np.round(np.sqrt(np.mean((self.evaldata['extent'] - self.evaldata['pred_extent'])**2)), 5)
         
-        # computing error
-        print(f'evaldata\n{evaldata}')
-        print(f'shape: {evaldata.shape}')
-        rmse = np.round(np.sqrt(np.mean((evaldata['extent'] - evaldata['pred_extent'])**2)), 5)
-        print(f'rmse: {rmse}')
-        evaldata.to_csv(f'{runpath}eval_data_{rmse}.csv', index=False)
+
+        
 
 
     def evaluate(self, network, loader, device):

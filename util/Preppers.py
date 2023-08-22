@@ -53,8 +53,8 @@ class HotnCode:
         return trainsplit, testsplit
     
     def write(self):
-        self.fold0.to_csv('csv/fold0.csv', index=False)
-        self.fold1.to_csv('csv/fold1.csv', index=False)
+        self.fold0.to_csv('csv/fold_0.csv', index=False)
+        self.fold1.to_csv('csv/fold_1.csv', index=False)
         self.valmap.to_csv('csv/Val.csv', index=False)
 
 map_path = 'csv/original/Train.csv'

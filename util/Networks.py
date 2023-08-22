@@ -13,6 +13,7 @@ class Res18FCNet(nn.Module):
         self.s_loss_fn = RMSELoss()
         self.traincost, self.testcost = [], []
         self.s_traincost, self.s_testcost = [], []
+        self.patience = None
         # architecture
         if architecture_name == 'res18fc':
             from util.Architectures import Res18FC
@@ -64,8 +65,11 @@ class Res18FCNet(nn.Module):
         epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}\t\t{round(self.s_traincost[-1], 4)}\t\t{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
         # save model if current best
         if self.s_testcost[-1] == min(self.s_testcost):
-            torch.save(self.state_dict(), runpath+'model'+str(self.fold)+'.pth')
+            self.patience = 4
+            torch.save(self.state_dict(), runpath+'model_'+str(self.fold)+'.pth')
             epoch_info = epoch_info + f'\tsaved!'
+        else:
+            self.patience -= 1
         # print and log current epoch info
         print(epoch_info)
         with open(runpath + 'log.txt', 'a') as file:
@@ -81,6 +85,10 @@ class Res18FCNet(nn.Module):
             self.train_epoch(trainloader, device)
             self.test_epoch(testloader, device)
             self.log_epoch(header, runpath, nr_epochs)
+            if self.patience <= 0:
+                i = nr_epochs + 1
+                print('no more patience\n')
+            
 
 
 

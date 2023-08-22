@@ -102,13 +102,65 @@ def test5():
     print(list(range(100))[::10])
 
 def test6():
-    pass
+    # better save decisions
+    df = pd.read_csv('bsd_data.txt')
+    df = df[['COST', 'cost']]
+    set0 = df[:12]
+    set1 = df[12:24]
+    set2 = df[24:36]
+    set3 = df[36:48]
+
+    sets = [set0, set1, set2, set3]
+    fig, (ax0, ax1, ax2, ax3) = plt.subplots(4, figsize=(8, 16))
+    for i, ax in enumerate((ax0, ax1, ax2, ax3)):
+        ax.plot(range(len(sets[i])), sets[i])
+        if i < 3:
+            ax.set_xticks([])
+        #ax.plot(range(len(set1)), set1)
+        #ax.plot(range(len(set2)), set2)
+        #ax.plot(range(len(set3)), set3)
+    plt.tight_layout()
+    plt.show()
 
 def test7():
-    pass
+    def get_standard_savepoints(set):
+        x = [epoch for epoch in range(len(set0)) if set0['cost'][epoch] == min(set0['cost'][:epoch+1])]
+        y = [set0['cost'][epoch] for epoch in range(len(set0)) if set0['cost'][epoch] == min(set0['cost'][:epoch+1])]
+        return x, y
+    # better save decisions
+    df = pd.read_csv('bsd_data.txt')
+    df = df[['COST', 'cost']]
+    set0 = df[:12]
+    set1 = df[12:24]
+    set2 = df[24:36]
+    set3 = df[36:48]
+
+    savepoints_x, savepoints_y = get_standard_savepoints(set3)
+    #savepoints = [(epoch, set0['cost'][epoch]) for epoch in range(len(set0)) if set0['cost'][epoch]==min(list(set0['cost'])[:epoch])]
+    plt.plot(range(len(set0)), set0)
+    plt.scatter(savepoints_x, savepoints_y)
+    plt.show()
+
+def test8():
+    f0 = pd.read_csv('csv/fold_0.csv')
+    f0 = f0[f0.columns[3:]]
+    f0_cats = list(f0.columns)
+    f0_colsums = np.array(f0.sum())
+    f1 = pd.read_csv('csv/fold_1.csv')
+    f1 = f1[f1.columns[3:]]
+    f1_cats = list(f1.columns)
+    f1_colsums = np.array(f1.sum())
+    
+    colsumdiff = f1_colsums - f0_colsums
+    print(colsumdiff)
+    plt.bar(range(len(colsumdiff)), colsumdiff)
+    plt.show()
 
 def main():
-    test5()
+    test8()
+    #test7()
+    #test6()
+    #test5()
     #test4()
     #test3()
     #test2()

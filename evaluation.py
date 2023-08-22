@@ -15,8 +15,8 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     # folderstructure setup
-    path = {'fold_0':'csv/fold0.csv',
-            'fold_1':'csv/fold1.csv',
+    path = {'fold_0':'csv/fold_0.csv',
+            'fold_1':'csv/fold_1.csv',
             'valmap':'csv/Val.csv',
             'data_labeled':'data/train/',
             'data_unlabeled':'data/test/'
@@ -35,7 +35,8 @@ def main():
     
 
     #runpath = 'run/20_15_38_03_special/'
-    runpath = 'run/21_07_37_42_special/'
+    #runpath = 'run/21_07_37_42_special/'
+    runpath = 'run/21_13_27_39_special/'
 
     from util.Networks import Res18FCNet as Network
 
@@ -47,7 +48,11 @@ def main():
 
     from util.Readers import Res18FCReader as Reader
     from util.Evaluators import CrossEvaluator as Evaluator
-    Evaluator(runpath, models, Reader, path, hparam, device)
+    evaluator = Evaluator(runpath, models, Reader, path, hparam, device)
+    print(f'evaldata\n{evaluator.evaldata}')
+    print(f'shape: {evaluator.evaldata.shape}')
+    print(f'rmse: {evaluator.rmse}')
+    evaluator.evaldata.to_csv(f'{runpath}eval_data_{evaluator.rmse}.csv', index=False)
 
 
 

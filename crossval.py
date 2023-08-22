@@ -55,6 +55,23 @@ def main():
     model1.train_model(trainloader=loader1, testloader=loader0, nr_epochs=hparam['nr_epochs'], runpath=runpath, device=device)
     performance_plot(model1, runpath)
 
+    # evaluation
+    from util.Networks import Res18FCNet as Network
+
+    # creating and loading model state here because could not be passed as a parameter for some reason
+    models = [Network(fold=None, architecture_name=hparam['architecture_name'], weight_decay=hparam['weight_decay'], dropout_rate=hparam['dropout_rate'], penalty=hparam['penalty']).to(device), Network(fold=None, architecture_name=hparam['architecture_name'], weight_decay=hparam['weight_decay'], dropout_rate=hparam['dropout_rate'], penalty=hparam['penalty']).to(device)]
+    for i, model in enumerate(models):
+        model.load_state_dict(torch.load(runpath+'model_'+str(i)+'.pth'))
+        model.eval()
+
+    from util.Readers import Res18FCReader as Reader
+    from util.Evaluators import CrossEvaluator as Evaluator
+    evaluator = Evaluator(runpath, models, Reader, path, hparam, device)
+    print(f'evaldata\n{evaluator.evaldata}')
+    print(f'shape: {evaluator.evaldata.shape}')
+    print(f'rmse: {evaluator.rmse}')
+    evaluator.evaldata.to_csv(f'{runpath}eval_data_{evaluator.rmse}.csv', index=False)
+
     # generating submission file
     #from util.Readers import Res18FCReader as EvalReader
     #valset = EvalReader(path['valmap'], path['data_unlabeled'], resizes=hparam['resizes'])
