@@ -33,7 +33,7 @@ def main():
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
             'resizes':(128, 128),
-            'penalty': 1}
+            'penalty': 10}
 
     # loading data
     from util.Readers import Res18FCReader as Reader
