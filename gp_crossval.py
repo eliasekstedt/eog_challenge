@@ -4,13 +4,15 @@ import os
 from torch.utils.data import DataLoader
 from torchvision.transforms import RandomHorizontalFlip
 
-# setting the seed
+# make deterministic
 import random
 random.seed(0)
 import numpy as np
 np.random.seed(0)
 import torch
 torch.manual_seed(0)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 

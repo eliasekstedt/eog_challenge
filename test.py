@@ -179,7 +179,27 @@ def test9():
 
 
 def test10():
-    pass
+    #test = pd.read_csv('csv/Val.csv')
+    fold_0 = pd.read_csv('csv/fold_0.csv')
+    fold_1 = pd.read_csv('csv/fold_1.csv')
+    train = pd.concat([fold_0, fold_1], axis=0)
+
+    train['pred'] = [None for _ in range(len(train))]
+    reorder = list(train.columns[0:3]) + [train.columns[-1]] + list(train.columns[3:-1])
+    train = train[reorder]
+    rmse_list = []
+    for i in range(101):
+        train['pred'] = np.ones(len(train))*i
+        rmse = np.sqrt(np.mean((train['extent'] - train['pred'])**2))
+        print(f'guess|rmse: {i}|{rmse}')
+        rmse_list.append(rmse)
+    
+    plt.plot(range(len(rmse_list)), rmse_list)
+    plt.show()
+
+
+
+
 
 def test11():
     pass
@@ -196,7 +216,8 @@ def test14():
 
 
 def main():
-    test9()
+    test10()
+    #test9()
     #test8()
     #test7()
     #test6()
