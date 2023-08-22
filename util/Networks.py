@@ -86,8 +86,8 @@ class Res18FCNet(nn.Module):
             self.test_epoch(testloader, device)
             self.log_epoch(header, runpath, nr_epochs)
             if self.patience <= 0:
-                break
                 print('no more patience\n')
+                break
             
 
 

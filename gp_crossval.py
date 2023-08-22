@@ -31,7 +31,7 @@ def objective(param):
 
     # hyperparameters
     hparam = {'batch_size': 100,
-            'nr_epochs': 3,
+            'nr_epochs': 25,
             'architecture_name':'res18fc',
             'weight_decay': param[0],
             'dropout_rate': 0.0,
@@ -80,10 +80,9 @@ def main():
     # Define hyperparameter space
     space = [Real(0, 1e-6, name='wd')]
     result = gp_minimize(objective, space, n_calls=10, acq_func='EI', n_random_starts=5)
+    print('optimization finished\n')
     best_param = result.x[0]
-    print('***************************')
     print(result)
-    print('***************************')
     print(f'best_param: {best_param}')
 
     
