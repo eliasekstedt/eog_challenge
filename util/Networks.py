@@ -70,12 +70,13 @@ class Res18FCNet(nn.Module):
     def log_epoch(self, header, runpath, nr_epochs):
         epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}\t\t{round(self.s_traincost[-1], 4)}\t\t{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
         # save model if current best
-        if len(self.s_testcost) >= 8 and self.s_testcost[-1] == min(self.s_testcost[8:]):
-            self.patience = 4
-            torch.save(self.state_dict(), runpath+'model_'+str(self.fold)+'.pth')
-            epoch_info = epoch_info + f'\tsaved!'
-        else:
-            self.patience -= 1
+        if len(self.s_testcost) >= 8:
+            if self.s_testcost[-1] == min(self.s_testcost[7:]):
+                self.patience = 4
+                torch.save(self.state_dict(), runpath+'model_'+str(self.fold)+'.pth')
+                epoch_info = epoch_info + f'\tsaved!'
+            else:
+                self.patience -= 1
         # print and log current epoch info
         print(epoch_info)
         with open(runpath + 'log.txt', 'a') as file:

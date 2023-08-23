@@ -202,7 +202,12 @@ def test10():
 
 
 def test11():
-    pass
+    patience = None
+    vec = []
+    for i in range(25):
+        vec.append(np.random.normal(0, 1))
+        if len(vec) >= 8:
+            print(min(vec[7:]))
 
 def test12():
     pass
@@ -216,7 +221,8 @@ def test14():
 
 
 def main():
-    test10()
+    test11()
+    #test10()
     #test9()
     #test8()
     #test7()
