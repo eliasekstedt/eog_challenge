@@ -17,7 +17,6 @@ class Nex(nn.Module):
         self.resnet18 = nn.Sequential(*list(self.resnet18.children())[:-1])
         # ...
         self.postnex_block = PostNexBlock(nrexus, dropout_rate)
-
         
     def forward(self, x, context):
         context = self.prenex_block(context)

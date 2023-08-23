@@ -4,6 +4,34 @@ from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
 
+class Evaluator: # INCOMPLETE!
+    def __init__(self, runpath, model, reader, path, hparam, device):
+        self.runpath = runpath
+        set = reader(path['fold_1'], path['data_labeled'], resizes=hparam['resizes'], augment=False, eval=True)
+        loader = DataLoader(set, batch_size=hparam['batch_size'], shuffle=False)
+        pred = self.evaluate(model, loader, device)
+
+    def evaluate(self, network, loader, device):
+        with torch.no_grad():
+            preds, ids, fnames = None, None, None
+            for i, (batch_images, batch_context, batch_ids, batch_fnames) in enumerate(loader):
+                if i%10 == 0:
+                    print(i)
+                batch_images = batch_images.to(device)
+                batch_context = batch_context.to(device)
+                batch_outputs = network(batch_images, batch_context)
+                batch_outputs = tuple([el[0].item() for el in batch_outputs])
+                if preds is None and ids is None and fnames is None:
+                    preds, ids, fnames = batch_outputs, batch_ids, batch_fnames
+                else:
+                    preds = preds + batch_outputs
+                    ids = ids + batch_ids
+                    fnames = fnames + batch_fnames
+            df = pd.DataFrame({'ID':ids, 'extent':preds})
+            df['extent'] = df['extent'].clip(lower=0, upper=100)
+            return df
+
+
 class CrossEvaluator:
     def __init__(self, runpath, models, reader, path, hparam, device):        
         self.runpath = runpath
@@ -19,10 +47,6 @@ class CrossEvaluator:
         self.evaldata = self.assemble_evaldata(path, preddata_0, preddata_1)
         self.rmse = np.round(np.sqrt(np.mean((self.evaldata['extent'] - self.evaldata['pred_extent'])**2)), 5)
         
-
-        
-
-
     def evaluate(self, network, loader, device):
         with torch.no_grad():
             preds, ids, fnames = None, None, None

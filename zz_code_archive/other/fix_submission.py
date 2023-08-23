@@ -2,6 +2,8 @@
 import numpy as np
 import pandas as pd
 
+
+
 def fix1():
     runpath = 'run/27_16_09_03/'
     df = pd.read_csv(runpath + 'SampleSubmission.csv')

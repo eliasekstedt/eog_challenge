@@ -202,15 +202,18 @@ def test10():
 
 
 def test11():
-    patience = None
-    vec = []
-    for i in range(25):
-        vec.append(np.random.normal(0, 1))
-        if len(vec) >= 8:
-            print(min(vec[7:]))
+    imsizes = pd.read_csv('zz_code_archive/other/allsizes.csv')
+    counts = imsizes.value_counts(['y','z'])
+    print(imsizes)
+    print(counts)
 
 def test12():
-    pass
+    df = pd.read_csv('run/23_14_02_21_special/100_25_nex_1e-07_0.0_(128, 128)_1.csv')
+    #print(df['extent'].mean())
+    print(df['extent'].min())
+    df['extent'] = df['extent'].clip(lower=0, upper=100)
+    #print(df['extent'].mean())
+    print(df['extent'].min())
 
 def test13():
     pass
@@ -221,7 +224,8 @@ def test14():
 
 
 def main():
-    test11()
+    test12()
+    #test11()
     #test10()
     #test9()
     #test8()
