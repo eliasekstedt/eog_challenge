@@ -15,9 +15,15 @@ class Res18FCNet(nn.Module):
         self.s_traincost, self.s_testcost = [], []
         self.patience = None
         # architecture
-        if architecture_name == 'res18fc':
+        if architecture_name == 'nex':
+            from util.Architectures import Nex
+            self.architecture = Nex(dropout_rate)
+        elif architecture_name == 'res18fc':
             from util.Architectures import Res18FC
             self.architecture = Res18FC(dropout_rate)
+        elif architecture_name == 'vgg16':
+            from util.Architectures import VGG16
+            self.architecture = VGG16()
         else:
             print(f'architecture {architecture_name} is not defined')
             1/0
@@ -64,7 +70,7 @@ class Res18FCNet(nn.Module):
     def log_epoch(self, header, runpath, nr_epochs):
         epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}\t\t{round(self.s_traincost[-1], 4)}\t\t{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
         # save model if current best
-        if self.s_testcost[-1] == min(self.s_testcost):
+        if len(self.s_testcost) >= 8 and self.s_testcost[-1] == min(self.s_testcost[8:]):
             self.patience = 4
             torch.save(self.state_dict(), runpath+'model_'+str(self.fold)+'.pth')
             epoch_info = epoch_info + f'\tsaved!'
@@ -85,63 +91,7 @@ class Res18FCNet(nn.Module):
             self.train_epoch(trainloader, device)
             self.test_epoch(testloader, device)
             self.log_epoch(header, runpath, nr_epochs)
-            if self.patience <= 0:
+            if self.patience is not None and self.patience <= 0:
                 print('no more patience\n')
                 break
             
-
-
-
-
-
-#save_info = ''
-#if current_epoch > 10:#nr_epochs//2:
-#    save_info = f'\tsave{current_epoch}!'
-#    torch.save(self.state_dict(), runpath+f'model{current_epoch}.pth')
-#epoch_info = epoch_info + save_info
-#save_info = self.save_model(runpath)
-"""
-    def save_model(self, runpath):
-        save_info = ''
-        if len(self.s_testcost) >= 5:
-            new_cost = self.s_testcost[-1]
-            sorted_costs = sorted(self.s_testcost)
-            if new_cost == sorted_costs[0]:
-                torch.save(self.state_dict(), runpath+'model1.pth')
-                save_info = f'\tsaved1!'
-            elif new_cost == sorted_costs[1]:
-                torch.save(self.state_dict(), runpath+'model2.pth')
-                save_info = f'\tsaved2!'
-            elif new_cost == sorted_costs[2]:
-                torch.save(self.state_dict(), runpath+'model3.pth')
-                save_info = f'\tsaved3!'
-            elif new_cost == sorted_costs[3]:
-                torch.save(self.state_dict(), runpath+'model4.pth')
-                save_info = f'\tsaved4!'
-            elif new_cost == sorted_costs[4]:
-                torch.save(self.state_dict(), runpath+'model5.pth')
-                save_info = f'\tsaved5!'
-        return save_info
-
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

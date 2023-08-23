@@ -24,14 +24,13 @@ def main():
             'data_unlabeled':'data/test/'
             }
 
-    tag = 'test'
+    tag = 'nex_initiation'
     device = 'cuda:0'
-
 
     # hyperparameters
     hparam = {'batch_size': 100,
-            'nr_epochs': 3,
-            'architecture_name':'res18fc',
+            'nr_epochs': 25,
+            'architecture_name':'nex',
             'weight_decay': 1e-7,
             'dropout_rate': 0.0,
             'resizes':(128, 128),
@@ -49,13 +48,14 @@ def main():
     runpath = run_init(hparams=hparam, tag=tag, device=device)
 
     from util.Networks import Res18FCNet
-    model = Res18FCNet(hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate'], hparam['penalty']).to(device)
+    model = Res18FCNet(0, hparam['architecture_name'], hparam['weight_decay'], hparam['dropout_rate'], hparam['penalty']).to(device)
     model.train_model(trainloader, testloader, hparam['nr_epochs'], runpath, device)
 
     # plot results
     from util.Tools import performance_plot
     performance_plot(model, runpath)
 
+    """
     # generating submission file
     from util.Readers import Res18FCReader as EvalReader
     valset = EvalReader(path['valmap'], path['data_unlabeled'], resizes=hparam['resizes'])
@@ -65,6 +65,7 @@ def main():
     from util.Tools import create_submission
     create_submission(network, runpath, valloader, hparam, device)
     print('predictions generated, run finished\n')
+    """
 
 
 
