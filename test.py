@@ -6,6 +6,11 @@ import torch
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 
+def gshow(image):
+    plt.imshow(image.to("cpu").permute(1, 2, 0), cmap='gray')
+    #plt.xticks([])
+    #plt.yticks([])
+    plt.show()
 
 def test0():
     def get_subfile_name(runpath, hparam):
@@ -42,7 +47,7 @@ def test1():
     fig, ax1 = plt.subplots(1,figsize=(6, 8))
     # cost
     ax1.plot(epochs, a, traincol, label='train')
-    ax1.plot(epochs, b, testcol, label='val')
+    ax1.plot(epochs, b, testcol, label='count')
     ax1.set_ylim([4, 15])
     ax1.legend()
     #ax1.set_xticks([])
@@ -208,15 +213,87 @@ def test11():
     print(counts)
 
 def test12():
-    df = pd.read_csv('run/23_14_02_21_special/100_25_nex_1e-07_0.0_(128, 128)_1.csv')
-    #print(df['extent'].mean())
-    print(df['extent'].min())
-    df['extent'] = df['extent'].clip(lower=0, upper=100)
-    #print(df['extent'].mean())
-    print(df['extent'].min())
+    # heatmap of error contribution
+    """
+    further improvement:
+    * i want to replace the bar plot with a thin red stripe on the relevant row of the heat map to show
+    the relative contribution to the total error by datapoints of the corresponding label.
+    * i want to add a thin blue stripe to indicate the total number of datapoints belonging to
+    corresponding label
+    * green to indicate the target value
+    * i need to make everything compatible with the actual file that i will read the data from
+    """
+    def get_heatmap(df):
+        error_contribution_heatmap = None
+        for extent in df['extent'].unique():
+            if error_contribution_heatmap == None:
+                error_contribution_heatmap = get_heatmap_row(df, row_number=extent)
+            else:
+                row = get_heatmap_row(df, row_number=extent)
+                error_contribution_heatmap = torch.cat([error_contribution_heatmap, row], dim=1)
+
+        return error_contribution_heatmap/error_contribution_heatmap.max()
+
+    def get_heatmap_row(df, row_number):
+        counts_info = df.loc[df['extent'] == row_number].value_counts('rpred')
+        counts_of = [int(i) for  i in counts_info.index]
+        counts = [float(i) for i in counts_info.values]
+        cm_row = torch.zeros((3, 20, 100))
+        #print(f'*** {row_number} ***')
+        for i, of in enumerate(counts_of):
+            count = float(counts[i])
+            distance = np.abs(of - row_number)
+            #print(f'       count: {count}\n          of: {of}\n        dist: {distance}\ncontribution: {count*distance}\n')
+            cm_row[:, :, of] = count*distance
+        return cm_row
+
+    def get_distribution(heatmap):
+        collection_rows = [heatmap.shape[1]//22 + i*heatmap.shape[1]//11 for i in range(11)]
+        distribution = [None]*len(collection_rows)
+        for i, coord in enumerate(collection_rows):
+            distribution[i] = heatmap[:,coord:coord+1, :].sum().item()
+        print(distribution)
+        return [el/max(distribution) for el in distribution]
+    
+    def add_rel_contribution(hm, distribution):
+        hm_ulen = hm.shape[1]//11
+        row_coords = list(range(hm.shape[1]))[hm_ulen-1::hm_ulen]
+        red_stripe = torch.zeros(3, 1, hm.shape[2])
+        red_stripe[-1] = 50
+        print(red_stripe.shape)
+        print(hm[:, 11:12, :].shape)
+        1/0
+        for i in row_coords:
+            hm[:, row_coords:row_coords, :] = red_stripe
+        print(len(row_coords), len(distribution))
+
+    def plot_stats(heatmap):
+        contribution_distribution = get_distribution(heatmap)
+        print(contribution_distribution)
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        ax1.imshow(heatmap.to("cpu").permute(1, 2, 0), cmap='gray')
+        ax2.barh(range(len(contribution_distribution)), contribution_distribution[::-1])
+        ax2.set_yticks([])
+        plt.tight_layout()
+        plt.show()
+
+    df = pd.read_csv('run/20_15_38_03_special/eval_data_7.31243.csv')
+    df.rename(columns={'pred_extent':'pred'}, inplace=True)
+    df['rpred'] = df['pred'].round()
+    df = df[['extent', 'pred', 'rpred']]
+    #print(df)
+    #print(df['extent'].unique())
+    error_contribution_heatmap = get_heatmap(df)
+    distribution = get_distribution(error_contribution_heatmap)
+    add_rel_contribution(error_contribution_heatmap, distribution)
+    #plot_stats(error_contribution_heatmap)
+    #print(error_contribution_heatmap.shape)
+    #gshow(error_contribution_heatmap)
+    
 
 def test13():
     pass
+
 
 def test14():
     pass

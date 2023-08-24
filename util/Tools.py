@@ -54,7 +54,7 @@ def performance_plot(model, runpath):
     # cost
     ax1.plot(epochs, model.s_traincost, traincol, label='train')
     ax1.plot(epochs, model.s_testcost, testcol, label='val')
-    ax1.set_ylim([4, 15])
+    ax1.set_ylim([4, 9])
     ax1.legend()
     #ax1.set_xticks([])
     ax1.set_ylabel('Cost')

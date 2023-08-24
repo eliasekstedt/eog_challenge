@@ -16,8 +16,8 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     # folderstructure setup
-    path = {'fold_0':'csv/trainsplit.csv',
-            'fold_1':'csv/testsplit.csv',
+    path = {'fold_0':'csv/fold_0.csv',
+            'fold_1':'csv/fold_1.csv',
             'valmap':'csv/Val.csv',
             'data_labeled':'data/train/',
             'data_unlabeled':'data/test/'
@@ -30,7 +30,7 @@ def main():
     hparam = {'batch_size': 100,
             'nr_epochs': 25,
             'architecture_name':'nex',
-            'weight_decay': 1,
+            'weight_decay': 0,
             'dropout_rate': 0.0,
             'resizes':(128, 128),
             'penalty': 1}
