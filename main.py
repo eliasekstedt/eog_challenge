@@ -30,7 +30,7 @@ def main():
     hparam = {'batch_size': 100,
             'nr_epochs': 25,
             'architecture_name':'nex',
-            'weight_decay': 5e-7,
+            'weight_decay': 1,
             'dropout_rate': 0.0,
             'resizes':(128, 128),
             'penalty': 1}

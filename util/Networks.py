@@ -72,7 +72,7 @@ class Res18FCNet(nn.Module):
         # save model if current best
         if len(self.s_testcost) >= 8:
             if self.s_testcost[-1] == min(self.s_testcost[7:]):
-                self.patience = 4
+                self.patience = 10
                 torch.save(self.state_dict(), runpath+'model_'+str(self.fold)+'.pth')
                 epoch_info = epoch_info + f'\tsaved!'
             else:
