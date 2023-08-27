@@ -28,7 +28,7 @@ def main():
 
     # hyperparameters
     hparam = {'batch_size': 100,
-            'nr_epochs': 25,
+            'nr_epochs': 18,
             'architecture_name':'nex',
             'weight_decay': 0,
             'dropout_rate': 0.0,

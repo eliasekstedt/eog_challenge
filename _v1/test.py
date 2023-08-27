@@ -235,10 +235,12 @@ def test12():
         return error_contribution_heatmap/error_contribution_heatmap.max()
 
     def get_heatmap_row(df, row_number):
+        row_width = 100
+        row_height = 20
         counts_info = df.loc[df['extent'] == row_number].value_counts('rpred')
         counts_of = [int(i) for  i in counts_info.index]
         counts = [float(i) for i in counts_info.values]
-        cm_row = torch.zeros((3, 20, 100))
+        cm_row = torch.zeros((3, row_height, row_width))
         #print(f'*** {row_number} ***')
         for i, of in enumerate(counts_of):
             count = float(counts[i])
@@ -252,43 +254,78 @@ def test12():
         distribution = [None]*len(collection_rows)
         for i, coord in enumerate(collection_rows):
             distribution[i] = heatmap[:,coord:coord+1, :].sum().item()
-        print(distribution)
-        return [el/max(distribution) for el in distribution]
+        return [int(round(el/max(distribution)*heatmap.shape[2])) for el in distribution] # length of bar in pixels
     
-    def add_rel_contribution(hm, distribution):
-        hm_ulen = hm.shape[1]//11
-        row_coords = list(range(hm.shape[1]))[hm_ulen-1::hm_ulen]
-        red_stripe = torch.zeros(3, 1, hm.shape[2])
-        red_stripe[-1] = 50
-        print(red_stripe.shape)
-        print(hm[:, 11:12, :].shape)
-        1/0
-        for i in row_coords:
-            hm[:, row_coords:row_coords, :] = red_stripe
-        print(len(row_coords), len(distribution))
+    def add_vstripe(heatmap):
+        row_height = 20
+        row_width = 100
+        stripe = torch.zeros(3, row_height, 1)
+        stripe[1, :, :] = 0.4*heatmap.max()
+        print(heatmap.shape)
+        crows = [i*row_height for i in range(11)]
+        ccols = [i*row_width//10 for i in range(11)]
+        print(crows)
+        print(ccols)
+        #1/0
+        for i in range(11):
+            rowlow = crows[i]
+            rowhigh = rowlow + row_height
+            collow = crows[i]//2
+            colhigh = collow + 1
+            print(rowlow, rowhigh, min(collow,99), min(colhigh,100))
+            #print(stripe.shape)
+            #print(heatmap[:, rowlow:rowhigh, collow:colhigh].shape)
+            heatmap[:, rowlow:rowhigh, min(collow,99):min(colhigh,100)] = stripe
+
+
+
+    def add_hstripe(hm, distribution, color):
+        print(distribution)
+        hm_vulen = hm.shape[1]//11
+        row_coords = list(range(hm.shape[1]))[hm_vulen-1::hm_vulen]
+        row_coords = [el-1*(color=='blue') for el in row_coords] # positioning red v blue
+        for i, coord in enumerate(row_coords):
+            stripe_len = distribution[i]
+            stripe = torch.zeros(3, 1, stripe_len)
+            if color == 'red':
+                stripe[0, 0:1, :stripe_len] = 0.4*hm.max()
+            else:
+                stripe[2, 0:1, :stripe_len] = 0.4*hm.max()
+            hm[:, coord:coord+1, :stripe_len] = stripe
 
     def plot_stats(heatmap):
-        contribution_distribution = get_distribution(heatmap)
-        print(contribution_distribution)
-        fig, (ax1, ax2) = plt.subplots(1, 2)
+        fig, ax1 = plt.subplots(1)
         ax1.imshow(heatmap.to("cpu").permute(1, 2, 0), cmap='gray')
-        ax2.barh(range(len(contribution_distribution)), contribution_distribution[::-1])
-        ax2.set_yticks([])
         plt.tight_layout()
         plt.show()
 
-    df = pd.read_csv('run/20_15_38_03_special/eval_data_7.31243.csv')
+    #df = pd.read_csv('run/20_15_38_03_special/eval_data_7.31243.csv')
+    df = pd.read_csv('run/20_15_38_03_special/alt_evaldata.csv')
     df.rename(columns={'pred_extent':'pred'}, inplace=True)
     df['rpred'] = df['pred'].round()
     df = df[['extent', 'pred', 'rpred']]
-    #print(df)
-    #print(df['extent'].unique())
-    error_contribution_heatmap = get_heatmap(df)
+    print(df)
+
+    data = pd.DataFrame({'extent':[10*i for i in range(11)], 'rpred':[99*(np.random.uniform(0, 1)>0.5) for _ in range(11)]})
+    for _ in range(50):
+        new = pd.DataFrame({'extent':[10*i for i in range(11)], 'rpred':[np.random.uniform(0, 1)*99 for _ in range(11)]})
+        data = pd.concat([data, new], axis=0)
+
+    vc = data['extent'].value_counts()
+    ivc = list(vc.index)
+    vvc = list(vc.values)
+    rvvc = [int(round(el/max(vvc)*100)) for el in vvc]
+
+    
+    error_contribution_heatmap = get_heatmap(data)
     distribution = get_distribution(error_contribution_heatmap)
-    add_rel_contribution(error_contribution_heatmap, distribution)
-    #plot_stats(error_contribution_heatmap)
-    #print(error_contribution_heatmap.shape)
-    #gshow(error_contribution_heatmap)
+    add_vstripe(error_contribution_heatmap)
+    #add_hstripe(error_contribution_heatmap, distribution, 'red')
+    #add_hstripe(error_contribution_heatmap, rvvc, 'blue')
+    plot_stats(error_contribution_heatmap)
+    """
+    """
+    
     
 
 def test13():

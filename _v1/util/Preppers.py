@@ -57,6 +57,16 @@ class HotnCode:
         self.fold1.to_csv('csv/fold_1.csv', index=False)
         self.valmap.to_csv('csv/Val.csv', index=False)
 
+class Subset:
+    def __init__(self, path, size):
+        self.map0 = pd.read_csv(path['fold_0']).head(size)
+        self.map1 = pd.read_csv(path['fold_1']).head(size)
+        self.mapv = pd.read_csv(path['valmap']).head(size)
+        self.map0.to_csv('csv/sub0.csv', index=False)
+        self.map1.to_csv('csv/sub1.csv', index=False)
+        self.mapv.to_csv('csv/subv.csv', index=False)
+
+
 map_path = 'csv/original/Train.csv'
 valmap_path = 'csv/original/Test.csv'
 HotnCode(map_path, valmap_path)

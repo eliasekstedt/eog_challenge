@@ -4,12 +4,14 @@ from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
 
-class Evaluator: # INCOMPLETE!
+class Evaluator:
     def __init__(self, runpath, model, reader, path, hparam, device):
         self.runpath = runpath
         set = reader(path['fold_1'], path['data_labeled'], resizes=hparam['resizes'], augment=False, eval=True)
         loader = DataLoader(set, batch_size=hparam['batch_size'], shuffle=False)
-        pred = self.evaluate(model, loader, device)
+        preddata = self.evaluate(model, loader, device)
+        self.evaldata = self.assemble_evaldata(path, preddata)
+        self.rmse = np.round(np.sqrt(np.mean((self.evaldata['extent'] - self.evaldata['pred_extent'])**2)), 5)
 
     def evaluate(self, network, loader, device):
         with torch.no_grad():
@@ -31,6 +33,15 @@ class Evaluator: # INCOMPLETE!
             df['extent'] = df['extent'].clip(lower=0, upper=100)
             return df
 
+    def assemble_evaldata(self, path, preddata):
+        preddata.rename(columns={'extent':'pred_extent'}, inplace=True)
+        folddata = pd.read_csv(path['fold_1'])
+        evaldata = preddata.merge(folddata, on='ID', how='inner')
+        evaldata['error'] = np.abs(evaldata['extent'] - evaldata['pred_extent'])
+        print(evaldata.columns)
+        print(type(evaldata.columns))
+        evaldata = evaldata[['ID', 'filename', 'extent', 'pred_extent', 'error']+list(evaldata.columns[4:-1])]
+        return evaldata
 
 class CrossEvaluator:
     def __init__(self, runpath, models, reader, path, hparam, device):        
