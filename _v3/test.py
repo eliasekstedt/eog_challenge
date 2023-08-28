@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
-
+from PIL import Image
 
 def test0():
     seq = np.random.normal(0, 1, 9)
@@ -17,13 +17,84 @@ def test1():
     right = tuple(np.random.randint(0, 1) for _ in range(3))
     left = left + right
     
-
-
 def test2():
-    pass
+    evaldata = pd.read_csv('run/initiate_WF1/28_13_05_28/evaldata.csv')
+    from sklearn.metrics import confusion_matrix
+    cmatrix = confusion_matrix(evaldata['extent'], evaldata['pred'])
+    import seaborn as sns
+    sns.heatmap(cmatrix, annot=True, fmt='g', cmap='Blues')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.savefig(f'cmatrix')
+    plt.figure()
+    plt.close('all')
 
 def test3():
-    pass
+    def showme(tp_im, tn_im, fp_im, fn_im):
+        fig, axs = plt.subplots(4, figsize=(10, 10))
+        axs[0].imshow(tp_im)
+        axs[0].set_title('tp_im')
+        axs[0].set_xticks([])
+        axs[0].set_yticks([])
+        axs[1].imshow(fn_im)
+        axs[1].set_title('fn_im')
+        axs[1].set_xticks([])
+        axs[1].set_yticks([])
+        axs[2].imshow(fp_im)
+        axs[2].set_title('fp_im')
+        axs[2].set_xticks([])
+        axs[2].set_yticks([])
+        axs[3].imshow(tn_im)
+        axs[3].set_title('tn_im')
+        axs[3].set_xticks([])
+        axs[3].set_yticks([])
+        plt.tight_layout()
+        plt.show()
+        """
+        axs[0,0].imshow(tp_im)
+        axs[0,0].set_title('tp_im')
+        axs[0,0].set_xticks([])
+        axs[0,0].set_yticks([])
+        axs[0,1].imshow(fn_im)
+        axs[0,1].set_title('fn_im')
+        axs[0,1].set_xticks([])
+        axs[0,1].set_yticks([])
+        axs[1,0].imshow(fp_im)
+        axs[1,0].set_title('fp_im')
+        axs[1,0].set_xticks([])
+        axs[1,0].set_yticks([])
+        axs[1,1].imshow(tn_im)
+        axs[1,1].set_title('tn_im')
+        axs[1,1].set_xticks([])
+        axs[1,1].set_yticks([])
+        plt.tight_layout()
+        plt.show()
+        """
+        """
+        """
+
+    df = pd.read_csv('evaldata.csv')
+    print(f'tp: {len(df[(df["extent"]==1) & (df["pred"]==1)])}')
+    print(f'tn: {len(df[(df["extent"]==0) & (df["pred"]==0)])}')
+    print(f'fp: {len(df[(df["extent"]==0) & (df["pred"]==1)])}')
+    print(f'fn: {len(df[(df["extent"]==1) & (df["pred"]==0)])}')
+
+    tp_fname = df[(df["extent"]==1) & (df["pred"]==1)]['filename'].to_list()
+    tn_fname = df[(df["extent"]==0) & (df["pred"]==0)]['filename'].to_list()
+    fp_fname = df[(df["extent"]==0) & (df["pred"]==1)]['filename'].to_list()
+    fn_fname = df[(df["extent"]==1) & (df["pred"]==0)]['filename'].to_list()
+
+    #print(fp_fname.tolist())
+    impath = '../data/train/'
+    for i in range(100):
+        #ind = i%min(len(tp_fname), len(tn_fname), len(fp_fname), len(fn_fname))
+
+        tp_im = Image.open(f'{impath}{tp_fname[i%len(tp_fname)]}')
+        tp_r, tp_g, tp_b = tp_im.split()
+        #tn_im = Image.open(f'{impath}{tn_fname[i%len(tn_fname)]}')
+        #fp_im = Image.open(f'{impath}{fp_fname[i%len(fp_fname)]}')
+        #fn_im = Image.open(f'{impath}{fn_fname[i%len(fn_fname)]}')
+        #showme(tp_im, tn_im, fp_im, fn_im)
 
 def test4():
     pass
@@ -47,9 +118,9 @@ def main():
     #test6()
     #test5()
     #test4()
-    #test3()
+    test3()
     #test2()
-    test1()
+    #test1()
     #test0()
 
 if __name__ == '__main__':

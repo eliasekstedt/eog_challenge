@@ -3,6 +3,8 @@ from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 import torch
 
 
@@ -12,6 +14,8 @@ class Evaluator:
         preddata = self.evaluate(model, loader, device)
         evaldata = self.assemble_evaldata(foldpath, preddata)
         evaldata.to_csv(f'{runpath}evaldata.csv', index=False)
+        self.cmatrix = self.get_cmatrix(evaldata)
+        self.plot_cmatrix(runpath)
 
     def evaluate(self, model, loader, device):
         model.eval()
@@ -21,22 +25,32 @@ class Evaluator:
                 batch_image = batch_image.to(device)
                 batch_outputs = model(batch_image)
                 batch_outputs = tuple([el[0].item() for el in batch_outputs])
+                batch_preds = tuple(1*(logit>0) for logit in batch_outputs)
                 if preds is None and ids is None:
-                    preds, ids = batch_outputs, batch_ids
+                    preds, ids = batch_preds, batch_ids
                 else:
-                    preds = preds + batch_outputs
+                    preds = preds + batch_preds
                     ids = ids + batch_ids
             df = pd.DataFrame({'ID':ids, 'pred':preds})
-            df['pred'] = df['pred'].clip(lower=0, upper=100)
             return df
 
     def assemble_evaldata(self, foldpath, preddata):
-        #preddata.rename(columns={'extent':'pred'}, inplace=True)
         folddata = pd.read_csv(foldpath)
         evaldata = preddata.merge(folddata, on='ID', how='inner')
         evaldata['error'] = np.abs(evaldata['extent'] - evaldata['pred'])
         evaldata = evaldata[['ID', 'filename', 'extent', 'pred', 'error']+list(evaldata.columns[4:-1])]
         return evaldata
+    
+    def get_cmatrix(self, evaldata):
+        return confusion_matrix(evaldata['extent'], evaldata['pred'])
+    
+    def plot_cmatrix(self, runpath):
+        sns.heatmap(self.cmatrix, annot=True, fmt='g', cmap='Blues')
+        plt.xlabel('Predicted')
+        plt.ylabel('True')
+        plt.savefig(f'{runpath}cmatrix')
+        plt.figure()
+        plt.close('all')
     
 
 

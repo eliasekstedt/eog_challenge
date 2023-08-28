@@ -44,10 +44,6 @@ class Workflow:
         plot_performance(self.model, self.runpath)
         self.evaluator = Evaluator(self.runpath, self.model, self.evalloader, self.path['set_1'], self.device)
 
-    def get_heatmap(self):
-        self.heatmap = Heatmap(self.runpath)
-        self.heatmap.save(self.runpath)
-
 
 
 
