@@ -12,9 +12,9 @@ class Evaluator:
         preddata = self.evaluate(model, loader, device)
         evaldata = self.assemble_evaldata(foldpath, preddata)
         evaldata.to_csv(f'{runpath}evaldata.csv', index=False)
-        self.rmse = self.get_rmse(evaldata)
 
     def evaluate(self, model, loader, device):
+        model.eval()
         with torch.no_grad():
             preds, ids = None, None
             for i, (batch_image, batch_ids, _) in enumerate(loader):
@@ -38,8 +38,7 @@ class Evaluator:
         evaldata = evaldata[['ID', 'filename', 'extent', 'pred', 'error']+list(evaldata.columns[4:-1])]
         return evaldata
     
-    def get_rmse(self, evaldata):
-        return np.round(np.sqrt(np.mean(evaldata['extent'] - evaldata['pred'])**2), 5)
+
 
 
 class Heatmap:

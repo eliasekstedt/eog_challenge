@@ -50,24 +50,27 @@ def show(image, runpath='', title=''):
     #plt.close('all')
     plt.show()
 
-def performance_plot(model, runpath):
-    epochs = range(1, len(model.testaccuracy) + 1)
+def plot_performance(model, runpath):
+    epochs = range(1, len(model.testcost) + 1)
     traincol = 'tab:blue'
     testcol = 'tab:red'
     # figure
-    fig, ax1 = plt.subplots(1,figsize=(6, 8))
+    fig, (ax1, ax2) = plt.subplots(2,figsize=(6, 8))
     # cost
-    ax1.plot(epochs, model.trainaccuracy, traincol, label='train')
-    ax1.plot(epochs, model.testaccuracy, testcol, label='val')
-    ax1.set_ylim([4, 14])
+    ax1.plot(epochs, model.traincost, traincol, label='train')
+    ax1.plot(epochs, model.testcost, testcol, label='val')
+    #ax1.set_ylim([0, 0.5])
     ax1.legend()
     #ax1.set_xticks([])
     ax1.set_ylabel('Cost')
+    ax2.plot(epochs, model.trainaccuracy, traincol, label='train')
+    ax2.plot(epochs, model.testaccuracy, testcol, label='val')
+    ax2.set_ylim([0.5, 1])
+    ax2.legend()
     plt.tight_layout()
     plt.savefig(f'{runpath}performance.png')
     plt.figure()
     plt.close('all')
-    
 
 def create_submission(network, runpath, valloader, hparam, device):
     def get_subfile_name(runpath, hparam):

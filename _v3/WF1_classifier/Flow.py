@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 # part imports
 from WF1_classifier.parts.Readers import Reader
 from WF1_classifier.parts.Tools import run_init
-from WF1_classifier.parts.Tools import performance_plot
+from WF1_classifier.parts.Tools import plot_performance
 from WF1_classifier.parts.Networks import Net
 from WF1_classifier.parts.Evaluation import Evaluator
 from WF1_classifier.parts.Evaluation import Heatmap
@@ -37,12 +37,12 @@ class Workflow:
         self.runpath = run_init(hparams=self.hparam, tag=self.tag, device=self.device)
 
     def learn_parameters(self):
-        self.model = Net(self.hparam['architecture_name'], self.hparam['weight_decay'], self.hparam['penalty']).to(self.device)
+        self.model = Net(self.hparam['weight_decay']).to(self.device)
         self.model.train_model(self.loader_0, self.loader_1, self.hparam['nr_epochs'], self.runpath, self.device)
 
     def evaluate(self):
-        performance_plot(self.model, self.runpath)
-        #self.evaluator = Evaluator(self.runpath, self.model, self.evalloader, self.path['set_1'], self.device)
+        plot_performance(self.model, self.runpath)
+        self.evaluator = Evaluator(self.runpath, self.model, self.evalloader, self.path['set_1'], self.device)
 
     def get_heatmap(self):
         self.heatmap = Heatmap(self.runpath)

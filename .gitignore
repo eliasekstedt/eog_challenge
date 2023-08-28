@@ -3,3 +3,4 @@ archive/
 run/
 __pycache__/
 model.pth
+_notes/

@@ -23,17 +23,17 @@ class Reader(Dataset):
     
     def __getitem__(self, idx):
         row = self.set.iloc[idx]
-        name = row['filename']
-        image = Image.open(self.path_im+name)
+        filename = row['filename']
+        image = Image.open(self.path_im+filename)
         image = self.make_size_uniform(image=image, size=self.resizes)
         if self.eval:
             id = row['ID']
-            return image, id, name
+            return image, id, filename
         else:
             label = torch.tensor([row['extent']], dtype=torch.float32)
             if self.augment:
                 image = self.transform(image)
-            return image, label, name
+            return image, label, filename
 
     def make_size_uniform(self, image, size):
         resize = transforms.Compose([transforms.Resize(size), transforms.ToTensor()])

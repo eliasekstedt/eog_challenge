@@ -2,10 +2,11 @@
 from datetime import datetime
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from WF1_classifier.parts.Architectures import Architecture
 
 class Net(nn.Module):
-    def __init__(self, architecture_name=None, weight_decay=0, penalty=None):
+    def __init__(self, weight_decay=0):
         super(Net, self).__init__()
         self.criterion = torch.nn.BCEWithLogitsLoss()
         self.traincost, self.testcost = [], []
@@ -23,39 +24,47 @@ class Net(nn.Module):
         self.train()
         cost, accuracy = 0, 0
         for batch_images, batch_labels, _ in trainloader: # loop iterations correspond to batches
-            x, y = batch_images.to(device), batch_labels.to(device)
+            x, labels = batch_images.to(device), batch_labels.to(device)
             # prediction error
-            preds = self(x)
-            loss = self.criterion(preds, y)
+            logits = self(x)
+            loss = self.criterion(logits, labels)
             # Backpropagation
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
             # record cost & accuracy
             cost += loss.item()/len(trainloader)
-            accuracy += (preds.argmax(1)==y).sum().item()/len(trainloader.dataset)
+            accuracy += self.get_nr_accurate(logits, labels)/len(trainloader.dataset)
         self.traincost += [cost]
         self.trainaccuracy += [accuracy]
+
+    def get_nr_accurate(self, logits, labels, interpretability=False):
+        if interpretability: # map +-inf to range 0-1. for uncertainty estimate and adjustable thresholds
+            probs = F.sigmoid(logits)
+            preds = (probs>0.5) * 1
+        else:
+            preds = (logits>0) * 1
+        return (preds==labels).sum().item()
 
     def test_epoch(self, testloader, device):
         self.eval()
         cost, accuracy = 0, 0
         with torch.no_grad(): # disable gradient calculation
             for batch_images, batch_labels, _ in testloader:
-                x, y = batch_images.to(device), batch_labels.to(device)
-                preds = self(x)
-                loss = self.criterion(preds, y)
+                x, labels = batch_images.to(device), batch_labels.to(device)
+                logits = self(x)
+                loss = self.criterion(logits, labels)
                 # record cost & accuracy
                 cost += loss.item()/len(testloader)
-                accuracy += (preds.argmax(1)==y).sum().item()/len(testloader.dataset)
+                accuracy += self.get_nr_accurate(logits, labels)/len(testloader.dataset)
         self.testcost += [cost]
         self.testaccuracy += [accuracy]
 
     def log_epoch(self, header, runpath, nr_epochs):
         epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}/{round(self.trainaccuracy[-1], 4)}\t\t{round(self.testcost[-1], 4)}/{round(self.testaccuracy[-1], 4)}\t\t{str(datetime.now())[11:19]}'
         # save model if current best
-        if len(self.testaccuracy) >= 8:
-            if self.testaccuracy[-1] == min(self.testaccuracy[7:]):
+        if len(self.testaccuracy) >= 1:
+            if self.testaccuracy[-1] == max(self.testaccuracy[0:]):
                 self.patience = 4
                 torch.save(self.state_dict(), f'{runpath}model.pth')
                 epoch_info = epoch_info + f'\tsaved!'
