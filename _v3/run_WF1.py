@@ -16,7 +16,7 @@ def main():
             }
 
     hparam = {'batch_size': 100,
-            'nr_epochs': 3,
+            'nr_epochs': 12,
             #'architecture_name':'im',
             'weight_decay': 1e-3,
             'dropout_rate': 0.0,
