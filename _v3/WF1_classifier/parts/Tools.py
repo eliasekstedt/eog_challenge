@@ -67,7 +67,7 @@ def plot_performance(model, runpath):
     ax2.plot(epochs, model.testaccuracy, testcol, label='val')
     ax2.set_ylim([0.5, 1])
     ax2.legend()
-    ax1.set_ylabel('Accuracy')
+    ax2.set_ylabel('Accuracy')
     plt.tight_layout()
     plt.savefig(f'{runpath}performance.png')
     plt.figure()

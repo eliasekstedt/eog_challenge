@@ -97,7 +97,16 @@ def test3():
         #showme(tp_im, tn_im, fp_im, fn_im)
 
 def test4():
-    pass
+    df = pd.read_csv('evaldata.csv')
+    print(df)
+    tp = df[(df["extent"]==1) & (df["pred"]==1)][df.columns[5:]]
+    tn = df[(df["extent"]==0) & (df["pred"]==0)][df.columns[5:]]
+    fp = df[(df["extent"]==0) & (df["pred"]==1)][df.columns[5:]]
+    fn = df[(df["extent"]==1) & (df["pred"]==0)][df.columns[5:]]
+    print(df.columns)
+    print(df.columns[5:])
+
+
 
 def test5():
     pass
@@ -117,8 +126,8 @@ def main():
     #test7()
     #test6()
     #test5()
-    #test4()
-    test3()
+    test4()
+    #test3()
     #test2()
     #test1()
     #test0()
