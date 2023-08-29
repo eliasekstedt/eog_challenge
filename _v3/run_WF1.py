@@ -24,10 +24,9 @@ def main():
             'penalty': 1}
     
     #resizes = ['full', (50,50), (64,64), (128,128)]
-    resizes = [(50,50), (64,64), (128,128)]
+    resizes = [(128,128), (64,64), (50,50)]
     for resize in resizes:
         hparam['resizes'] = resize
-        print(hparam['resizes'])
         for i in range(10):
             from WF1_classifier.Flow import Workflow
             workflow = Workflow(path=path, hparam=hparam, tag=tag)

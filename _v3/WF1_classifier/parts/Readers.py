@@ -40,6 +40,8 @@ class Reader(Dataset):
         filename = row['filename']
         image = Image.open(self.path_im+filename)
         width, height = image.size
+        image = image.crop((0, height//2, width, height))
+        width, height = image.size
         if width < self.resizes[1] or height < self.resizes[0]:
             #image = self.resize(ToTensor()(image))
             image = self.make_size_uniform(image=image, size=self.resizes)
