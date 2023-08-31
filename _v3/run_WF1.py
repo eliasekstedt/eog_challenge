@@ -26,7 +26,7 @@ def main():
     with open('eval_test.txt', 'a') as file:
         file.write('#######################################\n')
 
-    methods = [None, ['lr_crop', 'hflip']]
+    methods = [['lr_crop', 'hflip']]
     for method in methods:
         hparam['augment_method'] = method
         for i in range(5):
