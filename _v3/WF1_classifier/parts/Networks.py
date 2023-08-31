@@ -24,6 +24,23 @@ class Net(nn.Module):
         self.train()
         cost, accuracy = 0, 0
         for batch_images, batch_labels, _ in trainloader: # loop iterations correspond to batches
+            ####
+            """
+            if _ == 'L133F01013C39S14729Rp48955.jpg':
+                import matplotlib.pyplot as plt
+                def show(image, runpath='', title=''):
+                    #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
+                    plt.imshow(image.to("cpu").detach().permute(1, 2, 0))#, cmap='gray')
+                    plt.title(title)
+                    plt.xticks([])
+                    plt.yticks([])
+                    #plt.savefig(runpath+title+'.png')
+                    #plt.figure()
+                    #plt.close('all')
+                    plt.show()
+                show(image)
+            """
+            ####
             x, labels = batch_images.to(device), batch_labels.to(device)
             # prediction error
             logits = self(x)

@@ -3,7 +3,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn.functional as F
 from PIL import Image
+
+def show(image, runpath='', title=''):
+    #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
+    plt.imshow(image.to("cpu").detach().permute(1, 2, 0))#, cmap='gray')
+    #plt.title(title)
+    plt.xticks([])
+    plt.yticks([])
+    #plt.savefig(runpath+title+'.png')
+    #plt.figure()
+    #plt.close('all')
+    plt.show()
+
+
 
 def test0():
     seq = np.random.normal(0, 1, 9)
@@ -109,10 +123,19 @@ def test4():
 
 
 def test5():
-    pass
+    lst = ['hej', 'hopp']
+    print('hej' in lst)
+    print('hop' in lst)
 
 def test6():
-    pass
+    
+    image_tensor = torch.randn(1, 3, 64, 64)
+    target_size = (128, 128)
+    resized_image = F.interpolate(image_tensor, size=target_size, mode='bilinear', align_corners=False)
+
+    print("Original size:", image_tensor.shape)
+    print("Resized size:", resized_image.shape)
+    show(resized_image)
 
 def test7():
     pass
@@ -124,9 +147,9 @@ def test8():
 def main():
     #test8()
     #test7()
-    #test6()
+    test6()
     #test5()
-    test4()
+    #test4()
     #test3()
     #test2()
     #test1()

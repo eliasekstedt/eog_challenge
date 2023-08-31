@@ -1,19 +1,21 @@
 
+import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-
+from torchvision.io import read_image
 
 
 from PIL import Image
 from torchvision.transforms import RandomCrop, ToTensor, ToPILImage, Compose, RandomHorizontalFlip, Resize
+from torch.nn.functional import interpolate
 #from torchvision import transforms
 
 import matplotlib.pyplot as plt
 def show(image, runpath='', title=''):
     #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
     plt.imshow(image.to("cpu").detach().permute(1, 2, 0))#, cmap='gray')
-    #plt.title(title)
+    plt.title(title)
     plt.xticks([])
     plt.yticks([])
     #plt.savefig(runpath+title+'.png')
@@ -21,6 +23,76 @@ def show(image, runpath='', title=''):
     #plt.close('all')
     plt.show()
 
+class Reader(Dataset):
+    def __init__(self, path_csv, path_im, usize, augment_method=None, eval=False):
+        if eval:
+            assert augment_method == None
+        self.augment_method = augment_method
+        self.usize = usize
+        self.set = pd.read_csv(path_csv)
+        self.path_im = path_im
+        self.eval = eval
+
+    def __len__(self):
+        return len(self.set)
+    
+    def __getitem__(self, idx):
+        row = self.set.iloc[idx]
+        filename = row['filename']
+        title = f'{row["extent"]}| {row["growth_stage_F"]}, {row["growth_stage_M"]}, {row["growth_stage_S"]}, {row["growth_stage_V"]}'
+
+        image = read_image(f'{self.path_im}{filename}')/255
+        image = image.type(torch.float32)
+        #print(image.shape)
+        #print(filename)
+        if self.augment_method: # only on train
+            image = self.augment(image)
+        else: # done for (train), test and val
+            image = self.standardize(image)
+        '*** normalize ***'
+        if self.eval:
+            id = row['ID']
+            return image, id, filename
+        else:
+            label = torch.tensor([row['extent']], dtype=torch.float32)
+            #show(image, title=title)
+            return image, label, filename
+
+    def augment(self, image):
+        if 'lr_crop' in self.augment_method and image.shape[1]//2 >= self.usize and np.random.uniform(0, 1)>0.5:
+            "*** probably needs to be a custom transform to work propperly ***"
+            image = self.low_rand_crop(image)
+        if 'hflip' in self.augment_method:
+            hflip = RandomHorizontalFlip()
+            image = hflip(image)
+        if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
+            resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
+            image = resize(image)
+        if 'fourier' in self.augment_method:
+            pass
+        return image
+
+    def low_rand_crop(self, image):
+        crop = RandomCrop(self.usize)
+        image = image[:, image.shape[1]//2:, :]
+        return crop(image)
+
+    def standardize(self, image):
+        resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
+        image = resize(image)
+        image.requires_grad_(True)
+        return image
+    
+
+
+
+
+
+
+
+
+
+"""
 class Reader(Dataset):
     def __init__(self, path_csv, path_im, resizes, augment=False, eval=False):
         self.rCrop = RandomCrop(resizes[0])
@@ -61,7 +133,11 @@ class Reader(Dataset):
         image = resize(image)
         image.requires_grad_(True)
         return image
-"""
+    
+
+
+
+
 
 from torchvision import transforms
 class Reader(Dataset):

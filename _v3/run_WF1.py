@@ -17,17 +17,19 @@ def main():
 
     hparam = {'batch_size': 100,
             'nr_epochs': 25,
-            #'architecture_name':'im',
             'weight_decay': 1e-3,
             'dropout_rate': 0.0,
-            'resizes':(128, 128),
+            'augment_method': ['lr_crop', 'hflip'], 
+            'usize': 128,
             'penalty': 1}
     
-    #resizes = ['full', (50,50), (64,64), (128,128)]
-    resizes = [(128,128), (64,64), (50,50)]
-    for resize in resizes:
-        hparam['resizes'] = resize
-        for i in range(10):
+    with open('eval_test.txt', 'a') as file:
+        file.write('#######################################\n')
+
+    methods = [None, ['lr_crop', 'hflip']]
+    for method in methods:
+        hparam['augment_method'] = method
+        for i in range(5):
             from WF1_classifier.Flow import Workflow
             workflow = Workflow(path=path, hparam=hparam, tag=tag)
             workflow.load_data()
@@ -36,7 +38,7 @@ def main():
             workflow.evaluate()
             cm = workflow.evaluator.cmatrix
             with open('eval_test.txt', 'a') as file:
-                file.write(f'{hparam["resizes"][0]}\t{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\n')
+                file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{hparam["usize"]}\n')
 
 
 """
