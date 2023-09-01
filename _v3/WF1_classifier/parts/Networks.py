@@ -66,11 +66,8 @@ class Net(nn.Module):
         # save model if current best
         if min(self.trainaccuracy[-1], self.testaccuracy[-1]) >= max(self.record_performance):
             self.record_performance.append(min(self.trainaccuracy[-1], self.testaccuracy[-1]))
-            torch.save(self.state_dict(), f'{runpath}nc_model.pth')
-            epoch_info = epoch_info + f'\tnc'
-        if self.testaccuracy[-1] == min(self.testaccuracy):
             torch.save(self.state_dict(), f'{runpath}model.pth')
-            epoch_info = epoch_info + f'\toc'
+            epoch_info = epoch_info + f'\t*save*'
         # print and log current epoch info
         print(epoch_info)
         with open(runpath + 'log.txt', 'a') as file:
