@@ -1,4 +1,5 @@
 
+import torch
 from torch.utils.data import DataLoader
 
 # part imports
@@ -42,6 +43,7 @@ class Workflow:
         self.model.train_model(self.loader_0, self.loader_1, self.hparam['nr_epochs'], self.runpath, self.device)
 
     def evaluate(self):
+        self.model.load_state_dict(torch.load(f'{self.runpath}model.pth'))
         plot_performance(self.model, self.runpath)
         self.evaluator = Evaluator(self.runpath, self.model, self.evalloader, self.path['set_1'], self.device)
         try:
