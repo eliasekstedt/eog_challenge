@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from WF1_classifier.parts.Readers import Reader
 from WF1_classifier.parts.Tools import run_init
 from WF1_classifier.parts.Tools import plot_performance
+from WF1_classifier.parts.Tools import plot_by_ctx_feature
 from WF1_classifier.parts.Networks import Net
 from WF1_classifier.parts.Evaluation import Evaluator
 from WF1_classifier.parts.Evaluation import Heatmap
@@ -43,6 +44,10 @@ class Workflow:
     def evaluate(self):
         plot_performance(self.model, self.runpath)
         self.evaluator = Evaluator(self.runpath, self.model, self.evalloader, self.path['set_1'], self.device)
+        try:
+            plot_by_ctx_feature(self.runpath)
+        except ValueError:
+            print("no barplot made")
 
 
 

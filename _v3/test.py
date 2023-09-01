@@ -1,4 +1,5 @@
 
+from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -208,20 +209,8 @@ def test8():
     plt.show()
 
 def test9():
-    # create a sample dataset
-    data = {'A': [1, 2, 3, 4, 5], 
-            'B': [10, 20, 30, 40, 50]}
-    df = pd.DataFrame(data)
-    # group the rows by column A
-    grouped = df.groupby('A')
-    # calculate the mean of each column for each group
-    means = grouped.mean()
-    # create a new dataframe with the means
-    result = pd.DataFrame(means, columns=df.columns)
-    print(result)
-
     df = pd.read_csv('evaldata.csv')
-
+    title = f'fn: {len(df[(df["extent"]==1) & (df["pred"]==0)])}\ntp: {len(df[(df["extent"]==1) & (df["pred"]==1)])}\ntn: {len(df[(df["extent"]==0) & (df["pred"]==0)])}\nfp: {len(df[(df["extent"]==0) & (df["pred"]==1)])}'
     pos = df[df['extent']==1]
     gpos = pos.groupby((pos['pred']==1))
     gpmeans = gpos.mean()
@@ -236,16 +225,31 @@ def test9():
     df = pd.concat([gpdf, gndf], axis=0)
     df = df[df.columns[5:]].reset_index()
     df = df[['category'] + df.columns[1:-1].tolist()]
-    print(df)
-    1/0
 
-    gdf = df.groupby((df['extent']==1) & (df['pred']==1))
-    means = gdf.mean()
-    result = pd.DataFrame(means, columns=df.columns)
-    print(result)
+    categories = ['gsf', 'gsm', 'gss', 'gsv', 'ddr', 'dds', 'dg', 'dnd', 'dps', 'dwd', 'dwn', 'sl0', 'sl1', 'sr0', 'sr1']
+    vals = np.array(df[df.columns[1:]]).T
+
+    barwidth = 0.15
+    positions = [np.arange(len(categories))]
+    for i in range(3):
+        positions.append(positions[-1] + barwidth)
+
+    plt.figure(figsize=(16, 8))
+    for i, pos in enumerate(positions):
+        plt.bar(pos, vals[:,i], width=barwidth, label=df.category[i])
+    plt.title(title)
+    plt.xticks(positions[0] + 1.5*barwidth, categories)
+    plt.legend()
+    plt.show()
+    
+
+    
+
+
+
 
 def test10():
-    pass
+    print(str(datetime.now())[8:10])
 
 def test11():
     pass
@@ -264,7 +268,8 @@ def test15():
 
 
 def main():
-    test9()
+    test10()
+    #test9()
     #test8()
     #test7()
     #test6()

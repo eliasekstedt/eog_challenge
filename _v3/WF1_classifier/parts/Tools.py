@@ -1,12 +1,13 @@
 
+from datetime import datetime
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import pandas as pd
+import seaborn as sns
 import time
 import torch
-import seaborn as sns
 
-from datetime import datetime
 
 def run_init(hparams, tag, device):
     current = datetime.now()
@@ -59,7 +60,7 @@ def plot_performance(model, runpath):
     # cost
     ax1.plot(epochs, model.traincost, traincol, label='train')
     ax1.plot(epochs, model.testcost, testcol, label='val')
-    #ax1.set_ylim([0, 0.5])
+    ax1.set_ylim([0, 3])
     ax1.legend()
     #ax1.set_xticks([])
     ax1.set_ylabel('Cost')
@@ -72,6 +73,44 @@ def plot_performance(model, runpath):
     plt.savefig(f'{runpath}performance.png')
     plt.figure()
     plt.close('all')
+
+def plot_by_ctx_feature(runpath):
+    df = pd.read_csv(f'{runpath}evaldata.csv')
+    title = f'fn: {len(df[(df["extent"]==1) & (df["pred"]==0)])}\ntp: {len(df[(df["extent"]==1) & (df["pred"]==1)])}\ntn: {len(df[(df["extent"]==0) & (df["pred"]==0)])}\nfp: {len(df[(df["extent"]==0) & (df["pred"]==1)])}'
+    pos = df[df['extent']==1]
+    gpos = pos.groupby((pos['pred']==1))
+    gpmeans = gpos.mean()
+    gpdf = pd.DataFrame(gpmeans, columns=df.columns)
+    gpdf['category'] = ['fn', 'tp']
+
+    neg = df[df['extent']==0]
+    gneg = neg.groupby((neg['pred']==1))
+    gnmeans = gneg.mean()
+    gndf = pd.DataFrame(gnmeans, columns=df.columns)
+    gndf['category'] = ['tn', 'fp']
+    df = pd.concat([gpdf, gndf], axis=0)
+    df = df[df.columns[5:]].reset_index()
+    df = df[['category'] + df.columns[1:-1].tolist()]
+
+    categories = ['gsf', 'gsm', 'gss', 'gsv', 'ddr', 'dds', 'dg', 'dnd', 'dps', 'dwd', 'dwn', 'sl0', 'sl1', 'sr0', 'sr1']
+    vals = np.array(df[df.columns[1:]]).T
+
+    barwidth = 0.15
+    positions = [np.arange(len(categories))]
+    for i in range(3):
+        positions.append(positions[-1] + barwidth)
+
+    plt.figure(figsize=(16, 8))
+    for i, pos in enumerate(positions):
+        plt.bar(pos, vals[:,i], width=barwidth, label=df.category[i])
+    plt.title(title)
+    plt.xticks(positions[0] + 1.5*barwidth, categories)
+    plt.legend()
+    plt.savefig(f'{runpath}bars')
+    plt.figure()
+    plt.close('all')
+
+
 
 def create_submission(network, runpath, valloader, hparam, device):
     def get_subfile_name(runpath, hparam):

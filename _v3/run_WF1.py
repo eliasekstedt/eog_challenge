@@ -1,13 +1,13 @@
 
 
-
+from datetime import datetime
 import time
 import numpy as np
 import torch
 import pandas
 
 def main():
-    tag = 'initiate_WF1'
+    tag = f'WF1_{str(datetime.now())[8:10]}'
 
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
@@ -16,7 +16,7 @@ def main():
             }
 
     hparam = {'batch_size': 100,
-            'nr_epochs': 18,
+            'nr_epochs': 5,
             'weight_decay': 1e-3,
             'dropout_rate': 0.0,
             'augment_method': None, 
@@ -29,7 +29,7 @@ def main():
     methods = [['hflip'], ['lr_crop'], ['lr_crop', 'hflip']]
     for method in methods:
         hparam['augment_method'] = method
-        for i in range(5):
+        for i in range(1):
             from WF1_classifier.Flow import Workflow
             workflow = Workflow(path=path, hparam=hparam, tag=tag)
             workflow.load_data()
