@@ -16,7 +16,7 @@ def main():
             }
 
     hparam = {'batch_size': 100,
-            'nr_epochs': 18,
+            'nr_epochs': 3,
             'weight_decay': 1e-3,
             'dropout_rate': 0.0,
             'augment_method': None, 
@@ -29,7 +29,7 @@ def main():
     methods = [['hflip'], ['lr_crop'], ['lr_crop', 'hflip']]
     for method in methods:
         hparam['augment_method'] = method
-        for i in range(5):
+        for i in range(1):
             from WF1_classifier.Flow import Workflow
             workflow = Workflow(path=path, hparam=hparam, tag=tag)
             workflow.load_data()
