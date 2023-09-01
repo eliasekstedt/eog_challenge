@@ -8,7 +8,7 @@ import torch.nn.functional as F
 class Architecture(nn.Module):
     def __init__(self):
         super(Architecture, self).__init__()
-        self.resnet = models.resnet34(pretrained=True)
+        self.resnet = models.resnet18(pretrained=True)
         num_ftrs = self.resnet.fc.in_features
         self.resnet.fc = torch.nn.Linear(num_ftrs, 1)
 
