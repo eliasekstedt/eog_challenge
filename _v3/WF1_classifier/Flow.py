@@ -26,8 +26,8 @@ class Workflow:
         
     def load_data(self):
         self.loader_0 = self.get_loader(self.path['set_0'], self.path['labeled'], augment_method=self.hparam['augment_method'], eval=False, batch_size=self.hparam['batch_size'], shuffle=True)
-        self.loader_1 = self.get_loader(self.path['set_1'], self.path['labeled'], augment_method=None, eval=False, batch_size=self.hparam['batch_size'], shuffle=True)
-        self.evalloader = self.get_loader(self.path['set_1'], self.path['labeled'], augment_method=None, eval=True, batch_size=self.hparam['batch_size'], shuffle=False)
+        self.loader_1 = self.get_loader(self.path['set_1'], self.path['labeled'], augment_method=[], eval=False, batch_size=self.hparam['batch_size'], shuffle=True)
+        self.evalloader = self.get_loader(self.path['set_1'], self.path['labeled'], augment_method=[], eval=True, batch_size=self.hparam['batch_size'], shuffle=False)
 
     def get_loader(self, path_csv, path_im, augment_method, eval, batch_size, shuffle):
         set = Reader(path_csv, path_im, usize=self.hparam['usize'], augment_method=augment_method, eval=eval)

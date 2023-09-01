@@ -16,17 +16,17 @@ def main():
             }
 
     hparam = {'batch_size': 100,
-            'nr_epochs': 25,
+            'nr_epochs': 18,
             'weight_decay': 1e-3,
             'dropout_rate': 0.0,
-            'augment_method': ['lr_crop', 'hflip'], 
+            'augment_method': None, 
             'usize': 128,
             'penalty': 1}
     
     with open('eval_test.txt', 'a') as file:
         file.write('#######################################\n')
 
-    methods = [['lr_crop', 'hflip']]
+    methods = [['lr_crop'], ['hflip'], ['lr_crop', 'hflip']]
     for method in methods:
         hparam['augment_method'] = method
         for i in range(5):
