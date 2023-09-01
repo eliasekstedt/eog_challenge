@@ -159,3 +159,16 @@ if __name__ == '__main__':
     main()
 
 
+
+
+
+"""
+####
+            fname = 'L430F01265C39S13909Rp40378.jpg'
+            if fname in _:
+                ind = _.index(fname)
+                print(ind)
+                show(batch_images[ind])
+                #1/0
+            ####
+"""

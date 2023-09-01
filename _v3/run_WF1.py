@@ -1,7 +1,7 @@
 
 
 
-
+import time
 import numpy as np
 import torch
 import pandas
@@ -24,9 +24,9 @@ def main():
             'penalty': 1}
     
     with open('eval_test.txt', 'a') as file:
-        file.write('#######################################\n')
+        file.write('\n#######################################')
 
-    methods = [['lr_crop'], ['hflip'], ['lr_crop', 'hflip']]
+    methods = [['hflip'], ['lr_crop'], ['lr_crop', 'hflip']]
     for method in methods:
         hparam['augment_method'] = method
         for i in range(5):
@@ -34,11 +34,13 @@ def main():
             workflow = Workflow(path=path, hparam=hparam, tag=tag)
             workflow.load_data()
             workflow.initiate_run()
+            tic = time.perf_counter()
             workflow.learn_parameters()
+            toc = time.perf_counter()
             workflow.evaluate()
             cm = workflow.evaluator.cmatrix
             with open('eval_test.txt', 'a') as file:
-                file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{hparam["usize"]}\n')
+                file.write(f'\n{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{toc-tic}\t{hparam["augment_method"]}')
 
 
 """
