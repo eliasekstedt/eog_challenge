@@ -12,7 +12,7 @@ class Net(nn.Module):
         self.criterion = torch.nn.BCEWithLogitsLoss()
         self.traincost, self.testcost = [], []
         self.trainaccuracy, self.testaccuracy = [], []
-        self.patience = None
+        self.record_performance = [0]
         # architecture
         self.architecture = Architecture()
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
@@ -64,13 +64,10 @@ class Net(nn.Module):
     def log_epoch(self, header, runpath, nr_epochs):
         epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}/{round(self.trainaccuracy[-1], 4)}\t\t{round(self.testcost[-1], 4)}/{round(self.testaccuracy[-1], 4)}\t\t{str(datetime.now())[11:19]}'
         # save model if current best
-        if len(self.testaccuracy) >= 1:
-            if self.testaccuracy[-1] == max(self.testaccuracy[0:]):
-                self.patience = 4
-                torch.save(self.state_dict(), f'{runpath}model.pth')
-                epoch_info = epoch_info + f'\tsaved!'
-            else:
-                self.patience -= 0 # infinite patience
+        if min(self.trainaccuracy[-1], self.testaccuracy[-1]) >= max(self.record_performance):
+            self.record_performance.append(min(self.trainaccuracy[-1], self.testaccuracy[-1]))
+            torch.save(self.state_dict(), f'{runpath}model.pth')
+            epoch_info = epoch_info + f'\tsaved!'
         # print and log current epoch info
         print(epoch_info)
         with open(runpath + 'log.txt', 'a') as file:
@@ -86,7 +83,4 @@ class Net(nn.Module):
             self.train_epoch(trainloader, device)
             self.test_epoch(testloader, device)
             self.log_epoch(header, runpath, nr_epochs)
-            if self.patience is not None and self.patience <= 0:
-                print('no more patience\n')
-                break
             
