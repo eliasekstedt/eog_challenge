@@ -62,7 +62,7 @@ class Reader(Dataset):
         if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
             resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
             image = resize(image)
-        if np.random.uniform(0, 1) < 0.5 and 'fourier' in self.augment_method:
+        if np.random.uniform(0, 1) < 0.80 and 'fourier' in self.augment_method:
             to_pil = ToPILImage()
             image = to_pil(image)
             self.blocker.transform(image)
@@ -101,14 +101,52 @@ class Fblocker:
         return new_channels
 
     def block_freq(self, channels):
-        s = 10
-        block = np.zeros((s, s))
-        blockorix = channels[0].shape[0]//2 - s//2
-        blockoriy = channels[0].shape[1]//2 - s//2
+        height = channels[0].shape[0]
+        width = channels[0].shape[1]
+        option = '3'
+        if option == '0':
+            s = 10
+            block = np.zeros((s, s))
+            blockorix = channels[0].shape[0]//2 - s//2
+            blockoriy = channels[0].shape[1]//2 - s//2
+            for channel in channels:
+                channel[blockorix:blockorix+s, blockoriy:blockoriy+s] = block
+            return channels
+        elif option == '1':
+            s = 50
+            zchannels = [np.zeros_like(channels[0]) for _ in range(len(channels))]
+            for i, channel in enumerate(channels):
+                block = channel[(height-s)//2:(height+s)//2, (width-s)//2:(width+s)//2]
+                zchannels[i][(height-s)//2:(height+s)//2, (width-s)//2:(width+s)//2] = block
+            return zchannels
+        elif option == '2':
+            r = np.random.uniform(0, 1)
+            if r < 0.25:
+                for channel in channels:
+                    channel[:height, width//2:] = 0
+            elif r < 0.50:
+                for channel in channels:
+                    channel[height//2:, :width] = 0
+            elif r < 0.75:
+                for channel in channels:
+                    channel[:height, :width//2] = 0
+            else:
+                for channel in channels:
+                    channel[:height//2, :width] = 0
+            return channels
+        elif option == '3':
+            r = np.random.uniform(0, 1)
+            s = 10
+            if r < 0.5:
+                for channel in channels:
+                    channel[:height, width//2 + s:] = 0
+                    channel[:height, :width//2 - s] = 0
+            else:
+                for channel in channels:
+                    channel[height//2 + s:, :width] = 0
+                    channel[:height//2 - s, :width] = 0
+            return channels
 
-        for channel in channels:
-            channel[blockorix:blockorix+s, blockoriy:blockoriy+s] = block
-        return channels
 
     def magnize(self, channels):
         new_channels = []
@@ -123,4 +161,4 @@ class Fblocker:
         return new_channels
     
     def reassemble(self, channels):
-        return torch.tensor(np.stack(channels, axis=2), dtype=torch.float32).permute(2, 0, 1)/255
+        return torch.tensor(np.stack(channels, axis=2).astype(np.uint8), dtype=torch.float32).permute(2, 0, 1)/255

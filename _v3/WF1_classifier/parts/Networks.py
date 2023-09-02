@@ -18,8 +18,8 @@ def show(image, runpath='', title=''):
     #plt.figure()
     #plt.close('all')
     plt.show()
-###
 """
+###
 
 
 class Net(nn.Module):
@@ -42,7 +42,15 @@ class Net(nn.Module):
         cost, accuracy = 0, 0
         for batch_images, batch_labels, _ in trainloader: # loop iterations correspond to batches
             x, labels = batch_images.to(device), batch_labels.to(device)
-            #show(batch_images[0])
+            ###
+            """
+            show(batch_images[0])
+            show(batch_images[1])
+            show(batch_images[2])
+            show(batch_images[3])
+            show(batch_images[4])
+            """
+            ###
             # prediction error
             logits = self(x)
             loss = self.criterion(logits, labels)
