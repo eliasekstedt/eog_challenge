@@ -5,6 +5,22 @@ import torch.nn as nn
 import torch.nn.functional as F
 from WF1_classifier.parts.Architectures import Architecture
 
+"""
+###
+import matplotlib.pyplot as plt
+def show(image, runpath='', title=''):
+    #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
+    plt.imshow(image.to("cpu").detach().permute(1, 2, 0))#, cmap='gray')
+    plt.title(title)
+    plt.xticks([])
+    plt.yticks([])
+    #plt.savefig(runpath+title+'.png')
+    #plt.figure()
+    #plt.close('all')
+    plt.show()
+###
+"""
+
 
 class Net(nn.Module):
     def __init__(self, weight_decay=0):
@@ -83,4 +99,30 @@ class Net(nn.Module):
             self.train_epoch(trainloader, device)
             self.test_epoch(testloader, device)
             self.log_epoch(header, runpath, nr_epochs)
-            
+
+
+###
+"""
+import matplotlib.pyplot as plt
+def show(image, runpath='', title=''):
+    #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
+    plt.imshow(image.to("cpu").detach().permute(1, 2, 0))#, cmap='gray')
+    plt.title(title)
+    plt.xticks([])
+    plt.yticks([])
+    #plt.savefig(runpath+title+'.png')
+    #plt.figure()
+    #plt.close('all')
+    plt.show()
+
+show(batch_images[0])
+show(batch_images[1])
+show(batch_images[2])
+show(batch_images[3])
+show(batch_images[4])
+show(batch_images[5])
+show(batch_images[6])
+show(batch_images[7])
+show(batch_images[8])
+"""
+###

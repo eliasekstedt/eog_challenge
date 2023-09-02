@@ -26,10 +26,10 @@ def main():
     with open('eval_test.txt', 'a') as file:
         file.write('\n#######################################')
 
-    methods = [['hflip'], ['lr_crop'], ['lr_crop', 'hflip']]
+    methods = [['fourier', 'hflip'], ['hflip']]
     for method in methods:
         hparam['augment_method'] = method
-        for i in range(6):
+        for i in range(5):
             from WF1_classifier.Flow import Workflow
             workflow = Workflow(path=path, hparam=hparam, tag=tag)
             workflow.load_data()

@@ -25,6 +25,7 @@ def show(image, runpath='', title=''):
 
 class Reader(Dataset):
     def __init__(self, path_csv, path_im, usize, augment_method=[], eval=False):
+        self.blocker = Fblocker()
         self.augment_method = augment_method
         self.usize = usize
         self.set = pd.read_csv(path_csv)
@@ -52,17 +53,20 @@ class Reader(Dataset):
             return image, label, filename
 
     def augment(self, image):
-        if np.random.uniform(0, 1) > 0.5 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
+        if np.random.uniform(0, 1) < 0.5 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
             "*** probably needs to be a custom transform to work propperly ***"
             image = self.low_rand_crop(image)
         if 'hflip' in self.augment_method:
             hflip = RandomHorizontalFlip()
             image = hflip(image)
-        if 'fourier' in self.augment_method:
-            pass
         if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
             resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
             image = resize(image)
+        if np.random.uniform(0, 1) < 0.5 and 'fourier' in self.augment_method:
+            to_pil = ToPILImage()
+            image = to_pil(image)
+            self.blocker.transform(image)
+            image = self.blocker.image
         return image
 
     def low_rand_crop(self, image):
@@ -73,103 +77,50 @@ class Reader(Dataset):
         return crop(image)
 
 
-"""
-    def standardize(self, image):
-        resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
-        image = resize(image)
-        image.requires_grad_(True)
-        return image
+class Fblocker:
+    def __init__(self):
+        self.image = None
+        
+    def transform(self, PIL_image):
+        image = np.array(PIL_image)
+        channels = self.c_split(image)
+        shifted_channels = self.shift(channels)
+        blocked_channels = self.block_freq(shifted_channels)
+        #magnized_channels = self.magnize(blocked_channels)
+        ishifted_channels = self.ishift(blocked_channels)
+        self.image = self.reassemble(ishifted_channels)
+        #plot9(channels, magnized_channels, ishifted_channels)
+
+    def c_split(self, image):
+        return [image[:,:,0], image[:,:,1], image[:,:,2]]
     
-"""
+    def shift(self, channels):
+        new_channels = []
+        for channel in channels:
+            new_channels.append(np.fft.fftshift(np.fft.fft2(channel)))
+        return new_channels
 
+    def block_freq(self, channels):
+        s = 1
+        block = np.zeros((s, s))
+        blockorix = channels[0].shape[0]//2
+        blockoriy = channels[0].shape[1]//2
 
+        for channel in channels:
+            channel[blockorix:blockorix+s, blockoriy:blockoriy+s] = block
+        return channels
 
-
-
-
-
-
-
-"""
-class Reader(Dataset):
-    def __init__(self, path_csv, path_im, resizes, augment=False, eval=False):
-        self.rCrop = RandomCrop(resizes[0])
-        self.resize = Resize(resizes)
-        self.resizes = resizes
-        self.eval = eval
-        self.set = pd.read_csv(path_csv)
-        self.path_im = path_im
-        self.augment = augment
-        self.hflip = RandomHorizontalFlip()
-
-    def __len__(self):
-        return len(self.set)
+    def magnize(self, channels):
+        new_channels = []
+        for channel in channels:
+            new_channels.append(np.log(np.abs(channel) + 1))
+        return new_channels
     
-    def __getitem__(self, idx):
-        row = self.set.iloc[idx]
-        filename = row['filename']
-        image = Image.open(self.path_im+filename)
-        width, height = image.size
-        image = image.crop((0, height//2, width, height))
-        width, height = image.size
-        if width < self.resizes[1] or height < self.resizes[0]:
-            #image = self.resize(ToTensor()(image))
-            image = self.make_size_uniform(image=image, size=self.resizes)
-        else:
-            image = self.rCrop(ToTensor()(image))
-        if self.eval:
-            id = row['ID']
-            return image, id, filename
-        else:
-            label = torch.tensor([row['extent']], dtype=torch.float32)
-            if self.augment:
-                image = self.hflip(image)
-            return image, label, filename
-
-    def make_size_uniform(self, image, size):
-        resize = Compose([Resize(size), ToTensor()])
-        image = resize(image)
-        image.requires_grad_(True)
-        return image
+    def ishift(self, channels):
+        new_channels = []
+        for channel in channels:
+            new_channels.append(np.abs(np.fft.ifft2(np.fft.ifftshift(channel))))
+        return new_channels
     
-
-
-
-
-
-from torchvision import transforms
-class Reader(Dataset):
-    def __init__(self, path_csv, path_im, resizes, augment=False, eval=False):
-        transform = transforms.Compose([transforms.RandomHorizontalFlip()])
-        self.eval = eval
-        self.set = pd.read_csv(path_csv)
-        self.path_im = path_im
-        self.resizes = resizes
-        self.augment = augment
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.set)
-    
-    def __getitem__(self, idx):
-        row = self.set.iloc[idx]
-        name = row['filename']
-        image = Image.open(self.path_im+name)
-        image = self.make_size_uniform(image=image, size=self.resizes)
-        if self.eval:
-            id = row['ID']
-            return image, id, name
-        else:
-            label = torch.tensor([row['extent']], dtype=torch.float32)
-            if self.augment:
-                image = self.transform(image)
-                show(image)
-            return image, label, name
-
-    def make_size_uniform(self, image, size):
-        resize = transforms.Compose([transforms.Resize(size), transforms.ToTensor()])
-        image = resize(image)
-        image.requires_grad_(True)
-        return image
-
-"""
+    def reassemble(self, channels):
+        return torch.tensor(np.stack(channels, axis=2), dtype=torch.float32).permute(2, 0, 1)/255
