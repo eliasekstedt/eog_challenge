@@ -5,8 +5,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from WF1_classifier.parts.Architectures import Architecture
 
-"""
 ###
+"""
 import matplotlib.pyplot as plt
 def show(image, runpath='', title=''):
     #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
@@ -42,6 +42,7 @@ class Net(nn.Module):
         cost, accuracy = 0, 0
         for batch_images, batch_labels, _ in trainloader: # loop iterations correspond to batches
             x, labels = batch_images.to(device), batch_labels.to(device)
+            #show(batch_images[0])
             # prediction error
             logits = self(x)
             loss = self.criterion(logits, labels)
