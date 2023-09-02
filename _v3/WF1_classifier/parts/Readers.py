@@ -120,19 +120,20 @@ class Fblocker:
                 zchannels[i][(height-s)//2:(height+s)//2, (width-s)//2:(width+s)//2] = block
             return zchannels
         elif option == '2':
+            s = 0
             r = np.random.uniform(0, 1)
             if r < 0.25:
                 for channel in channels:
-                    channel[:height, width//2:] = 0
+                    channel[:height, width//2-1:] = 0
             elif r < 0.50:
                 for channel in channels:
-                    channel[height//2:, :width] = 0
+                    channel[height//2-s:, :width] = 0
             elif r < 0.75:
                 for channel in channels:
-                    channel[:height, :width//2] = 0
+                    channel[:height, :width//2+s] = 0
             else:
                 for channel in channels:
-                    channel[:height//2, :width] = 0
+                    channel[:height//2+s, :width] = 0
             return channels
         elif option == '3':
             r = np.random.uniform(0, 1)
