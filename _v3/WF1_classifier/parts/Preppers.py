@@ -21,7 +21,7 @@ class Prep:
         damage_no['extent'] = [0]*len(damage_no)
         return pd.concat([damage_yes, damage_no], axis=0).sample(frac=1)
 
-    def hotncode(sefl, df):
+    def hotncode(self, df):
         categorical_columns = ['growth_stage', 'damage', 'season']
         return pd.get_dummies(df, columns=categorical_columns)
     
