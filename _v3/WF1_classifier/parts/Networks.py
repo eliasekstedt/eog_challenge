@@ -7,18 +7,20 @@ from WF1_classifier.parts.Architectures import Architecture
 
 ###
 """
-import matplotlib.pyplot as plt
-def show(image, runpath='', title=''):
-    #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
-    plt.imshow(image.to("cpu").detach().permute(1, 2, 0))#, cmap='gray')
-    plt.title(title)
-    plt.xticks([])
-    plt.yticks([])
-    #plt.savefig(runpath+title+'.png')
-    #plt.figure()
-    #plt.close('all')
-    plt.show()
 """
+see = False
+if see:
+    import matplotlib.pyplot as plt
+    def show(image, runpath='', title=''):
+        #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
+        plt.imshow(image.to("cpu").detach().permute(1, 2, 0))#, cmap='gray')
+        plt.title(title)
+        plt.xticks([])
+        plt.yticks([])
+        #plt.savefig(runpath+title+'.png')
+        #plt.figure()
+        #plt.close('all')
+        plt.show()
 ###
 
 
@@ -44,12 +46,13 @@ class Net(nn.Module):
             x, labels = batch_images.to(device), batch_labels.to(device)
             ###
             """
-            show(batch_images[0])
-            show(batch_images[1])
-            show(batch_images[2])
-            show(batch_images[3])
-            show(batch_images[4])
             """
+            if see:
+                show(batch_images[0])
+                show(batch_images[1])
+                show(batch_images[2])
+                show(batch_images[3])
+                show(batch_images[4])
             ###
             # prediction error
             logits = self(x)

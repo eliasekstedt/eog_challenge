@@ -105,10 +105,10 @@ class Fblocker:
         width = channels[0].shape[1]
         option = '2'
         if option == '0':
-            s = 10
+            s = 1
             block = np.zeros((s, s))
-            blockorix = channels[0].shape[0]//2 - s//2
-            blockoriy = channels[0].shape[1]//2 - s//2
+            blockorix = channels[0].shape[0]//2# - s//2
+            blockoriy = channels[0].shape[1]//2# - s//2
             for channel in channels:
                 channel[blockorix:blockorix+s, blockoriy:blockoriy+s] = block
             return channels
