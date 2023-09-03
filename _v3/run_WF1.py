@@ -17,7 +17,7 @@ def main():
 
     hparam = {'batch_size': 100,
             'nr_epochs': 18,
-            'weight_decay': 1e-3,
+            'weight_decay': 1e-5,
             'dropout_rate': 0.0,
             'augment_method': None, 
             'usize': 128,
@@ -26,7 +26,7 @@ def main():
     with open('eval_test.txt', 'a') as file:
         file.write('\n#######################################')
 
-    methods = [['fourier', 'hflip', 'lr_crop'], ['hflip', 'lr_crop']]
+    methods = [['hflip'], ['lr_crop'], ['hflip', 'lr_crop']]
     for method in methods:
         hparam['augment_method'] = method
         for i in range(5):

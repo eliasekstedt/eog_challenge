@@ -103,7 +103,7 @@ class Fblocker:
     def block_freq(self, channels):
         height = channels[0].shape[0]
         width = channels[0].shape[1]
-        option = '3'
+        option = '2'
         if option == '0':
             s = 10
             block = np.zeros((s, s))
