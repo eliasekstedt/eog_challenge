@@ -16,24 +16,25 @@ def main():
             }
 
     hparam = {'batch_size': 100,
-            'nr_epochs': 18,
+            'nr_epochs': 20,
             'weight_decay': 1e-5,
             'dropout_rate': 0.0,
             'augment_method': None, 
-            'usize': 128,
+            'usize': None,
             'penalty': 1}
     
     with open('eval_test.txt', 'a') as file:
         file.write('\n#######################################')
 
     methods = [['ini_crop', 'lr_crop', 'hflip'], ['lr_crop', 'hflip']]#, ['hflip', 'lr_crop']]
-    balances = [[128, 256]]
+    balances = [[128, 128], [64, 128], [32, 128], [16, 128], [8, 128], [4, 128]]
+    #balances = [[16, 32], [16, 64], [16, 128], [16, 256], [16, 512]]
     for method in methods:
         hparam['augment_method'] = method
         for balance in balances:
             hparam['batch_size'] = balance[0]
             hparam['usize'] = balance[1]
-            for i in range(3):
+            for i in range(5):
                 from WF1_classifier.Flow import Workflow
                 workflow = Workflow(path=path, hparam=hparam, tag=tag)
                 workflow.load_data()

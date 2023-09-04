@@ -54,10 +54,9 @@ class Reader(Dataset):
 
     def augment(self, image):
         if 'ini_crop' in self.augment_method:
-            ini_resize = Compose([ToPILImage(), Resize((512, 512)), ToTensor()])
+            ini_resize = Compose([ToPILImage(), Resize((1024, 1024)), ToTensor()])
             image = ini_resize(image)
-        if np.random.uniform(0, 1) < 0.5 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
-            "*** probably needs to be a custom transform to work propperly ***"
+        if np.random.uniform(0, 1) < 0.25 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
             image = self.low_rand_crop(image)
         if 'hflip' in self.augment_method:
             hflip = RandomHorizontalFlip()
