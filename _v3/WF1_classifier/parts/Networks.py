@@ -48,6 +48,7 @@ class Net(nn.Module):
             """
             """
             if see:
+                print(batch_images.shape)
                 show(batch_images[0])
                 show(batch_images[1])
                 show(batch_images[2])

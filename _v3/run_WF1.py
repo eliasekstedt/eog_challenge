@@ -26,28 +26,28 @@ def main():
     with open('eval_test.txt', 'a') as file:
         file.write('\n#######################################')
 
-    methods = [['hflip'], ['lr_crop'], ['hflip', 'lr_crop']]
+    methods = [['ini_crop', 'lr_crop', 'hflip'], ['lr_crop', 'hflip']]#, ['hflip', 'lr_crop']]
+    balances = [[128, 256]]
     for method in methods:
         hparam['augment_method'] = method
-        for i in range(5):
-            from WF1_classifier.Flow import Workflow
-            workflow = Workflow(path=path, hparam=hparam, tag=tag)
-            workflow.load_data()
-            workflow.initiate_run()
-            tic = time.perf_counter()
-            workflow.learn_parameters()
-            toc = time.perf_counter()
-            workflow.evaluate()
-            cm = workflow.evaluator.cmatrix
-            with open('eval_test.txt', 'a') as file:
-                file.write(f'\n{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{toc-tic}\t{hparam["augment_method"]}')
+        for balance in balances:
+            hparam['batch_size'] = balance[0]
+            hparam['usize'] = balance[1]
+            for i in range(3):
+                from WF1_classifier.Flow import Workflow
+                workflow = Workflow(path=path, hparam=hparam, tag=tag)
+                workflow.load_data()
+                workflow.initiate_run()
+                tic = time.perf_counter()
+                workflow.learn_parameters()
+                toc = time.perf_counter()
+                workflow.evaluate()
+                cm = workflow.evaluator.cmatrix
+                with open('eval_test.txt', 'a') as file:
+                    file.write(f'\n{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{toc-tic}\t{hparam["augment_method"]}\t{hparam["batch_size"]}\t{hparam["usize"]}')
 
 
-"""
-remember to see what happens if cropping is done only on the lower part
 
-and also compare to the original image reader
-"""
 
 
 

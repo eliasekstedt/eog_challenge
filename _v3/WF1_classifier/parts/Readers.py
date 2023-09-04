@@ -53,6 +53,9 @@ class Reader(Dataset):
             return image, label, filename
 
     def augment(self, image):
+        if 'ini_crop' in self.augment_method:
+            ini_resize = Compose([ToPILImage(), Resize((512, 512)), ToTensor()])
+            image = ini_resize(image)
         if np.random.uniform(0, 1) < 0.5 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
             "*** probably needs to be a custom transform to work propperly ***"
             image = self.low_rand_crop(image)
