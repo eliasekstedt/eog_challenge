@@ -53,10 +53,12 @@ class Reader(Dataset):
             return image, label, filename
 
     def augment(self, image):
-        if 'ini_crop' in self.augment_method:
-            ini_resize = Compose([ToPILImage(), Resize((1024, 1024)), ToTensor()])
-            image = ini_resize(image)
-        if np.random.uniform(0, 1) < 0.25 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
+        #if 'ini_crop' in self.augment_method:
+        ini_resize = Compose([ToPILImage(), Resize((1024, 1024)), ToTensor()])
+        image = ini_resize(image)
+        if np.random.uniform(0, 1) < 0.25 and 'rcrop' in self.augment_method:
+            image = self.rcrop(image)
+        elif np.random.uniform(0, 1) < 0.25 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
             image = self.low_rand_crop(image)
         if 'hflip' in self.augment_method:
             hflip = RandomHorizontalFlip()
@@ -70,6 +72,11 @@ class Reader(Dataset):
             self.blocker.transform(image)
             image = self.blocker.image
         return image
+
+    def rcrop(self, image):
+        assert image.shape[1] == image.shape[2]
+        crop = RandomCrop(image.shape[1]//2)
+        return crop(image)
 
     def low_rand_crop(self, image):
         c512_resize = Compose([ToPILImage(), Resize((512, 512)), ToTensor()])

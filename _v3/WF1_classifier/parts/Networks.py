@@ -8,7 +8,7 @@ from WF1_classifier.parts.Architectures import Architecture
 ###
 """
 """
-see = True
+see = False
 if see:
     import matplotlib.pyplot as plt
     def show(image, runpath='', title=''):
@@ -49,11 +49,8 @@ class Net(nn.Module):
             """
             if see:
                 print(batch_images.shape)
-                show(batch_images[0])
-                show(batch_images[1])
-                show(batch_images[2])
-                show(batch_images[3])
-                #show(batch_images[4])
+                for i in range(batch_images.shape[0]):
+                    show(batch_images[i])
             ###
             # prediction error
             logits = self(x)
