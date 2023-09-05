@@ -75,6 +75,7 @@ def plot_performance(model, runpath):
     plt.close('all')
 
 def plot_by_ctx_feature(runpath):
+    """for each of the four categories, the mean of every feature"""
     df = pd.read_csv(f'{runpath}evaldata.csv')
     title = f'fn: {len(df[(df["extent"]==1) & (df["pred"]==0)])}\ntp: {len(df[(df["extent"]==1) & (df["pred"]==1)])}\ntn: {len(df[(df["extent"]==0) & (df["pred"]==0)])}\nfp: {len(df[(df["extent"]==0) & (df["pred"]==1)])}'
     pos = df[df['extent']==1]
@@ -92,7 +93,8 @@ def plot_by_ctx_feature(runpath):
     df = df[df.columns[5:]].reset_index()
     df = df[['category'] + df.columns[1:-1].tolist()]
 
-    categories = ['gsf', 'gsm', 'gss', 'gsv', 'ddr', 'dds', 'dg', 'dnd', 'dps', 'dwd', 'dwn', 'sl0', 'sl1', 'sr0', 'sr1']
+    print(df)
+    categories = ['gsf', 'gsm', 'gss', 'gsv', 'ddr', 'dds', 'dfd', 'dg', 'dnd', 'dps', 'dwd', 'dwn', 'sl0', 'sl1', 'sr0', 'sr1']
     vals = np.array(df[df.columns[1:]]).T
 
     barwidth = 0.15
@@ -102,6 +104,8 @@ def plot_by_ctx_feature(runpath):
 
     plt.figure(figsize=(16, 8))
     for i, pos in enumerate(positions):
+        print(pos)
+        print(vals[:,i])
         plt.bar(pos, vals[:,i], width=barwidth, label=df.category[i])
     plt.title(title)
     plt.xticks(positions[0] + 1.5*barwidth, categories)

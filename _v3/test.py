@@ -252,7 +252,11 @@ def test10():
     print(str(datetime.now())[8:10])
 
 def test11():
-    pass
+    # figuring out what goes wrong with the barplot
+    runpath = 'run/WF1_05/05_07_42_16/'
+    from WF1_classifier.parts.Tools import plot_by_ctx_feature
+    plot_by_ctx_feature(runpath)
+
 
 def test12():
     pass
@@ -268,7 +272,8 @@ def test15():
 
 
 def main():
-    test10()
+    test11()
+    #test10()
     #test9()
     #test8()
     #test7()
