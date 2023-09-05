@@ -25,12 +25,15 @@ def show(image, runpath='', title=''):
 
 class Reader(Dataset):
     def __init__(self, path_csv, path_im, usize, augment_method=[], eval=False):
-        self.blocker = Fblocker()
         self.augment_method = augment_method
         self.usize = usize
         self.set = pd.read_csv(path_csv)
         self.path_im = path_im
         self.eval = eval
+        self.blocker = Fblocker()
+        self.hflip = RandomHorizontalFlip()
+        self.ini_resize = Compose([ToPILImage(), Resize((1024, 1024)), ToTensor()])
+        self.final_resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
 
     def __len__(self):
         return len(self.set)
@@ -54,18 +57,15 @@ class Reader(Dataset):
 
     def augment(self, image):
         #if 'ini_crop' in self.augment_method:
-        ini_resize = Compose([ToPILImage(), Resize((1024, 1024)), ToTensor()])
-        image = ini_resize(image)
-        if np.random.uniform(0, 1) < 0.25 and 'rcrop' in self.augment_method:
+        image = self.ini_resize(image)
+        if np.random.uniform(0, 1) < 0.50 and 'rcrop' in self.augment_method:
             image = self.rcrop(image)
-        elif np.random.uniform(0, 1) < 0.25 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
-            image = self.low_rand_crop(image)
-        if 'hflip' in self.augment_method:
-            hflip = RandomHorizontalFlip()
-            image = hflip(image)
+        #elif np.random.uniform(0, 1) < 0.25 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
+        #    image = self.low_rand_crop(image)
+        if np.random.uniform(0, 1) < 0.5 and 'hflip' in self.augment_method:
+            image = self.hflip(image)
         if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
-            resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
-            image = resize(image)
+            image = self.final_resize(image)
         if np.random.uniform(0, 1) < 0.80 and 'fourier' in self.augment_method:
             to_pil = ToPILImage()
             image = to_pil(image)

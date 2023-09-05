@@ -11,7 +11,7 @@ class Architecture(nn.Module):
         super(Architecture, self).__init__()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         warnings.filterwarnings("ignore", category=UserWarning)
-        self.resnet = models.resnet34(pretrained=True)
+        self.resnet = models.resnet18(pretrained=True)
         num_ftrs = self.resnet.fc.in_features
         self.resnet.fc = torch.nn.Linear(num_ftrs, 1)
 
