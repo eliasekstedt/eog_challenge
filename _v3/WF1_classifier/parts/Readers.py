@@ -58,10 +58,10 @@ class Reader(Dataset):
     def augment(self, image):
         #if 'ini_crop' in self.augment_method:
         image = self.ini_resize(image)
-        if np.random.uniform(0, 1) < 0.50 and 'rcrop' in self.augment_method:
-            image = self.rcrop(image)
-        #elif np.random.uniform(0, 1) < 0.25 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
-        #    image = self.low_rand_crop(image)
+        #if np.random.uniform(0, 1) < 0.50 and 'rcrop' in self.augment_method:
+        #    image = self.rcrop(image)
+        if np.random.uniform(0, 1) < 0.25 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
+            image = self.low_rand_crop(image)
         if np.random.uniform(0, 1) < 0.5 and 'hflip' in self.augment_method:
             image = self.hflip(image)
         if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
