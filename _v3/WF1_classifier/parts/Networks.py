@@ -8,7 +8,7 @@ from WF1_classifier.parts.Architectures import Architecture
 ###
 """
 """
-see = True
+see = False
 if see:
     import matplotlib.pyplot as plt
     def show(image, runpath='', title=''):

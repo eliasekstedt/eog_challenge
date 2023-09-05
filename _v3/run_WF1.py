@@ -27,13 +27,13 @@ def main():
         file.write('\n#######################################')
 
     methods = [['lr_crop', 'hflip']]
-    balances = [[100, 128]]
+    balances = [[100, 128], [64, 128], [128, 128]]
     for method in methods:
         hparam['augment_method'] = method
         for balance in balances:
             hparam['batch_size'] = balance[0]
             hparam['usize'] = balance[1]
-            for i in range(1):
+            for i in range(5):
                 from WF1_classifier.Flow import Workflow
                 workflow = Workflow(path=path, hparam=hparam, tag=tag)
                 workflow.load_data()
