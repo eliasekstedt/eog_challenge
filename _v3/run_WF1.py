@@ -1,10 +1,23 @@
 
-
+import os
 from datetime import datetime
 import time
 import numpy as np
 import torch
 import pandas
+
+# make deterministic
+import random
+random.seed(0)
+import numpy as np
+np.random.seed(0)
+import torch
+torch.manual_seed(0)
+
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}'
@@ -16,7 +29,7 @@ def main():
             }
 
     hparam = {'batch_size': 64,
-            'nr_epochs': 20,
+            'nr_epochs': 5,
             'weight_decay': 1e-5,
             'dropout_rate': 0.0,
             'augment_method': ['rcrop', 'hflip'],
@@ -30,7 +43,7 @@ def main():
     #crop_ratios = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     crop_ratios = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
     for ratio in crop_ratios:
-        hparam['crop_ratio'] = ratio
+        hparam['crop_ratio'] = 0.5 #ratio
         for i in range(1):
             from WF1_classifier.Flow import Workflow
             workflow = Workflow(path=path, hparam=hparam, tag=tag)
