@@ -55,7 +55,7 @@ class Reader(Dataset):
             return image, label, filename
 
     def augment(self, image):
-        if np.random.uniform(0, 1) < 0.50 and 'rcrop' in self.augment_method: ###!!!
+        if np.random.uniform(0, 1) < 0.50 and 'rcrop' in self.augment_method:
             image = self.rcrop(image)
         if np.random.uniform(0, 1) < 0.5 and 'hflip' in self.augment_method:
             image = self.hflip(image)
