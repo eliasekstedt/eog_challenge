@@ -26,7 +26,7 @@ def main():
     with open('eval_test.txt', 'a') as file:
         file.write('\n#######################################')
 
-    methods = [[]]#[['rcrop', 'hflip']]
+    methods = [['rcrop', 'hflip']]
     balances = [[100, 128], [64, 128], [128, 128]]
     for method in methods:
         hparam['augment_method'] = method
