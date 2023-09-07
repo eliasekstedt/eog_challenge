@@ -8,8 +8,6 @@ from torchvision.io import read_image
 
 from PIL import Image
 from torchvision.transforms import RandomCrop, ToTensor, ToPILImage, Compose, RandomHorizontalFlip, Resize
-from torch.nn.functional import interpolate
-#from torchvision import transforms
 
 import matplotlib.pyplot as plt
 def show(image, runpath='', title=''):
@@ -24,13 +22,14 @@ def show(image, runpath='', title=''):
     plt.show()
 
 class Reader(Dataset):
-    def __init__(self, path_csv, path_im, usize, augment_method=[], eval=False):
+    def __init__(self, path_csv, path_im, usize, augment_method=[], crop_ratio=None, eval=False):
         self.augment_method = augment_method
+        self.crop_ratio = crop_ratio
         self.usize = usize
         self.set = pd.read_csv(path_csv)
         self.path_im = path_im
         self.eval = eval
-        self.blocker = Fblocker()
+        #self.blocker = Fblocker()
         self.hflip = RandomHorizontalFlip()
         self.ini_resize = Compose([ToPILImage(), Resize((1024, 1024)), ToTensor()])
         self.final_resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
@@ -56,36 +55,27 @@ class Reader(Dataset):
             return image, label, filename
 
     def augment(self, image):
-        #if 'ini_crop' in self.augment_method:
-        image = self.ini_resize(image)
-        if np.random.uniform(0, 1) < 0.50 and 'rcrop' in self.augment_method:
+        if np.random.uniform(0, 1) < 0.50 and 'rcrop' in self.augment_method: ###!!!
             image = self.rcrop(image)
-        #elif np.random.uniform(0, 1) < 0.25 and 'lr_crop' in self.augment_method: # and image.shape[1]//2 >= self.usize:
-        #    image = self.low_rand_crop(image)
         if np.random.uniform(0, 1) < 0.5 and 'hflip' in self.augment_method:
             image = self.hflip(image)
         if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
             image = self.final_resize(image)
+        """
         if np.random.uniform(0, 1) < 0.80 and 'fourier' in self.augment_method:
             to_pil = ToPILImage()
             image = to_pil(image)
             self.blocker.transform(image)
             image = self.blocker.image
+        """
         return image
 
     def rcrop(self, image):
-        assert image.shape[1] == image.shape[2]
-        crop = RandomCrop(image.shape[1]//2)
-        return crop(image)
+        crop = RandomCrop((int(image.shape[1]*self.crop_ratio), int(image.shape[2]*self.crop_ratio))) 
+        #return crop(image)
+        return crop(image[:,int(image.shape[1]*0.25):, :]) # COMPARE (UP TO CR=0.7) 
 
-    def low_rand_crop(self, image):
-        c512_resize = Compose([ToPILImage(), Resize((512, 512)), ToTensor()])
-        crop = RandomCrop(self.usize)
-        image = c512_resize(image)
-        image = image[:, image.shape[1]//2:, :]
-        return crop(image)
-
-
+"""
 class Fblocker:
     def __init__(self):
         self.image = None
@@ -172,3 +162,6 @@ class Fblocker:
     
     def reassemble(self, channels):
         return torch.tensor(np.stack(channels, axis=2).astype(np.uint8), dtype=torch.float32).permute(2, 0, 1)/255
+"""
+
+

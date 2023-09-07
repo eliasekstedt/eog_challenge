@@ -92,8 +92,6 @@ def plot_by_ctx_feature(runpath):
     df = pd.concat([gpdf, gndf], axis=0)
     df = df[df.columns[5:]].reset_index()
     df = df[['category'] + df.columns[1:-1].tolist()]
-
-    print(df)
     categories = ['gsf', 'gsm', 'gss', 'gsv', 'ddr', 'dds', 'dfd', 'dg', 'dnd', 'dps', 'dwd', 'dwn', 'sl0', 'sl1', 'sr0', 'sr1']
     vals = np.array(df[df.columns[1:]]).T
 
@@ -104,8 +102,6 @@ def plot_by_ctx_feature(runpath):
 
     plt.figure(figsize=(16, 8))
     for i, pos in enumerate(positions):
-        print(pos)
-        print(vals[:,i])
         plt.bar(pos, vals[:,i], width=barwidth, label=df.category[i])
     plt.title(title)
     plt.xticks(positions[0] + 1.5*barwidth, categories)
