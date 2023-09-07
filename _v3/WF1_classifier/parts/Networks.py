@@ -7,7 +7,6 @@ from WF1_classifier.parts.Architectures import Architecture
 
 ###
 """
-"""
 see = False
 if see:
     import matplotlib.pyplot as plt
@@ -21,6 +20,7 @@ if see:
         #plt.figure()
         #plt.close('all')
         plt.show()
+"""
 ###
 
 
@@ -46,11 +46,11 @@ class Net(nn.Module):
             x, labels = batch_images.to(device), batch_labels.to(device)
             ###
             """
-            """
             if see:
                 print(batch_images.shape)
                 for i in range(batch_images.shape[0]):
                     show(batch_images[i])
+            """
             ###
             # prediction error
             logits = self(x)
