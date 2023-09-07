@@ -16,7 +16,7 @@ def main():
             }
 
     hparam = {'batch_size': 64,
-            'nr_epochs': 20,
+            'nr_epochs': 1,
             'weight_decay': 1e-5,
             'dropout_rate': 0.0,
             'augment_method': ['rcrop', 'hflip'],
