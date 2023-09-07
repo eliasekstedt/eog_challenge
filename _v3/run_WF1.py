@@ -27,7 +27,7 @@ def main():
     with open('eval_test.txt', 'a') as file:
         file.write('\n#######################################')
 
-    crop_ratios = [0.5, 0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9] # again restricted to lower for comparison
+    crop_ratios = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] # again restricted to lower for comparison
     for ratio in crop_ratios:
         hparam['crop_ratio'] = ratio
         for i in range(2):
@@ -41,7 +41,7 @@ def main():
             workflow.evaluate()
             cm = workflow.evaluator.cmatrix
             with open('eval_test.txt', 'a') as file:
-                file.write(f'\n{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{toc-tic}\t{hparam["augment_method"]}\t{hparam["batch_size"]}\t{hparam["usize"]}')
+                file.write(f'\n{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{toc-tic}\t{hparam["crop_ratio"]}')
 
 
 

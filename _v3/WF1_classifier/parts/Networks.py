@@ -45,8 +45,15 @@ class Net(nn.Module):
             x, labels = batch_images.to(device), batch_labels.to(device)
             ###
             if see:
+                """
+                if '90_initial_1_1530_1530.JPG' in _:
+                    ind = _.index('90_initial_1_1530_1530.JPG')
+                    print(ind)
+                    show(batch_images[ind])
+                """
                 print(batch_images.shape)
                 for i in range(batch_images.shape[0]):
+                    print(_[i])
                     show(batch_images[i])
             ###
             # prediction error
@@ -108,28 +115,6 @@ class Net(nn.Module):
             self.log_epoch(header, runpath, nr_epochs)
 
 
-###
-"""
-import matplotlib.pyplot as plt
-def show(image, runpath='', title=''):
-    #plt.imshow(image.to("cpu").permute(1, 2, 0))#, cmap='gray')
-    plt.imshow(image.to("cpu").detach().permute(1, 2, 0))#, cmap='gray')
-    plt.title(title)
-    plt.xticks([])
-    plt.yticks([])
-    #plt.savefig(runpath+title+'.png')
-    #plt.figure()
-    #plt.close('all')
-    plt.show()
 
-show(batch_images[0])
-show(batch_images[1])
-show(batch_images[2])
-show(batch_images[3])
-show(batch_images[4])
-show(batch_images[5])
-show(batch_images[6])
-show(batch_images[7])
-show(batch_images[8])
-"""
-###
+
+
