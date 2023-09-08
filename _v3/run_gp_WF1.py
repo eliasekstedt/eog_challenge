@@ -33,7 +33,7 @@ def objective(param):
             }
 
     hparam = {'batch_size': 64,
-            'nr_epochs': 1,
+            'nr_epochs': 20,
             'weight_decay': param[0],
             'dropout_rate': 0.0,
             'augment_method': ['rcrop', 'hflip'],
@@ -59,7 +59,7 @@ def objective(param):
 def main():
     l_bound, u_bound = 0, 1
     space = [Real(l_bound, u_bound, name='wd')]
-    result = gp_minimize(objective, space, n_calls=5, acq_func='EI', n_random_starts=5)
+    result = gp_minimize(objective, space, n_calls=25, acq_func='EI', n_random_starts=5)
     print('optimization finished\n')
     best_param = result.x[0]
     print(f'best_param: {best_param}')
