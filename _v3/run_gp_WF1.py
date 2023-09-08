@@ -23,7 +23,7 @@ from skopt.space import Real
 
 def objective(param):
     tag = f'WF1_{str(datetime.now())[8:10]}'
-    #tag = tag + '/discard'
+    tag = tag + '/gp_wd_r01'
 
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
@@ -53,7 +53,7 @@ def objective(param):
     accuracy = (cm[0,0] + cm[1,1])/cm.sum()
     with open('gp_wd_data.txt', 'a') as file:
         file.write(f'{accuracy}\t{hparam["weight_decay"]}\t{round(toc-tic)}\n')
-    return accuracy
+    return 1-accuracy
     
 
 def main():

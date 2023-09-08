@@ -247,7 +247,7 @@ def test10():
 
 def test11():
     # figuring out what goes wrong with the barplot
-    d = pd.read_csv('CSV/Val.csv')
+    #d = pd.read_csv('CSV/Val.csv')
     #print(d.columns)
     runpath = 'run/WF1_08/08_11_25_53/'
     from WF1_classifier.parts.Tools import plot_by_ctx_feature
@@ -327,7 +327,7 @@ def test12():
 
 def test13():
     from WF1_classifier.parts.Tools import gp_plot
-    l_bound, u_bound = 0, 1e-3
+    l_bound, u_bound = 0, 1
     gp_plot([l_bound, u_bound])
 
 def test14():
@@ -338,9 +338,9 @@ def test15():
 
 
 def main():
-    #test13()
+    test13()
     #test12()
-    test11()
+    #test11()
     #test10()
     #test9()
     #test8()
