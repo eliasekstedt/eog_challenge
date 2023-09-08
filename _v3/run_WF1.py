@@ -24,38 +24,35 @@ def main():
 
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
+            'val':'WF1_classifier/csv/set_1.csv',
             'labeled':'../data/train/',
             'unlabeled':'../data/test/'
             }
 
     hparam = {'batch_size': 64,
-            'nr_epochs': 5,
+            'nr_epochs': 20,
             'weight_decay': 1e-5,
             'dropout_rate': 0.0,
             'augment_method': ['rcrop', 'hflip'],
-            'crop_ratio': None,
+            'crop_ratio': 0.5,
             'usize': 128,
             'penalty': 1}
     
     with open('eval_test.txt', 'a') as file:
         file.write('\n#######################################')
 
-    #crop_ratios = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    crop_ratios = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
-    for ratio in crop_ratios:
-        hparam['crop_ratio'] = 0.5 #ratio
-        for i in range(1):
-            from WF1_classifier.Flow import Workflow
-            workflow = Workflow(path=path, hparam=hparam, tag=tag)
-            workflow.load_data()
-            workflow.initiate_run()
-            tic = time.perf_counter()
-            workflow.learn_parameters()
-            toc = time.perf_counter()
-            workflow.evaluate()
-            cm = workflow.evaluator.cmatrix
-            with open('eval_test.txt', 'a') as file:
-                file.write(f'\n{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\t{hparam["crop_ratio"]}')
+    for i in range(10):
+        from WF1_classifier.Flow import Workflow
+        workflow = Workflow(path=path, hparam=hparam, tag=tag)
+        workflow.load_data()
+        workflow.initiate_run()
+        tic = time.perf_counter()
+        workflow.learn_parameters()
+        toc = time.perf_counter()
+        workflow.evaluate()
+        cm = workflow.evaluator.cmatrix
+        with open('eval_test.txt', 'a') as file:
+            file.write(f'\n{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}')
 
 
 

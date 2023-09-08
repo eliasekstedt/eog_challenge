@@ -72,8 +72,8 @@ class Reader(Dataset):
 
     def rcrop(self, image):
         crop = RandomCrop((int(image.shape[1]*self.crop_ratio), int(image.shape[2]*self.crop_ratio))) 
-        #return crop(image)
-        return crop(image[:,int(image.shape[1]*0.25):, :]) # COMPARE (UP TO CR=0.7) 
+        return crop(image)
+        #return crop(image[:,int(image.shape[1]*0.25):, :]) # COMPARE (UP TO CR=0.7) 
 
 """
 class Fblocker:

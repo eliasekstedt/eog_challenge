@@ -26,6 +26,7 @@ def objective(param):
 
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
+            'val':'WF1_classifier/csv/val.csv',
             'labeled':'../data/train/',
             'unlabeled':'../data/test/'
             }
@@ -59,31 +60,21 @@ def objective(param):
     
 
 def main():
-    space = [Real(1e-6, 1e-5, name='wd')]
-    result = gp_minimize(objective, space, n_calls=10, acq_func='EI', n_random_starts=5)
+    space = [Real(1e-6, 1e-4, name='wd')]
+    result = gp_minimize(objective, space, n_calls=50, acq_func='EI', n_random_starts=5)
     print('optimization finished\n')
     best_param = result.x[0]
-    print(result)
+    #print(result)
     print(f'best_param: {best_param}')
+    with open('gp_results.txt', 'a') as file:
+        file.write(f'best_param: {best_param}')
+    with open('gp_just_in_case_log.txt', 'a') as file:
+        file.write(f'best_param: {result}')
 
 
 
 """
-to do:
-***ALL OF THIS IM DOING BLINDLY***
-*find optimal unrestricted crop ratio
-*find optimal restricted crop ratio
-*try other architectures: dualpathnet68, inception v3, NASNET-A-Large, unet(?) and see the intersection of misclassified images
-*find out if they are similar in the optimal weight decay parameter (gaussian optimization)
-*begin building v4 (regression): an assembly of three of these architectures and the context features.
-    should they integrate all with each other or only the context features? this choise may have a great impact on the complexity of the model.
-*implement mixed precision
-
-always write down results from testing:
-results are consistent for a large range of batch sizes and resolutions
-
-in v4 or when using the full dataset:
-*find optimal crop frequency
+consider broader extent and splitting into validation set as well
 """
 
 

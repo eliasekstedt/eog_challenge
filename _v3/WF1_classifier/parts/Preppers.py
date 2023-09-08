@@ -7,15 +7,15 @@ class Prep:
     def __init__(self):
         df = self.get_selection()
         df = self.hotncode(df)
-        set_0, set_1 = self.split(df)
-        print(set_0)
-        print(set_1)
+        set_0, set_1, val = self.split(df)
+        print(f'lens: {len(set_0)}, {len(set_1)}, {len(val)}')
         set_0.to_csv(f'{outpath}set_0.csv', index=False)
         set_1.to_csv(f'{outpath}set_1.csv', index=False)
+        val.to_csv(f'{outpath}val.csv', index=False)
 
     def get_selection(self):
         df = pd.read_csv('csv/original/Train.csv').sample(frac=1)
-        damage_yes = df.loc[df['extent'] >= 80]
+        damage_yes = df.loc[df['extent'] >= 60]
         damage_no = df.loc[df['extent'] == 0].head(len(damage_yes))
         damage_yes['extent'] = [1]*len(damage_yes)
         damage_no['extent'] = [0]*len(damage_no)
@@ -26,10 +26,13 @@ class Prep:
         return pd.get_dummies(df, columns=categorical_columns)
     
     def split(self, df):
-        wedge = len(df)//2
-        set_0 = df[0:wedge]
-        set_1 = df[wedge:]
-        return set_0, set_1
+        wedge0 = len(df)//2
+        val = df[:wedge0]
+        train = df[wedge0:]
+        wedge = len(train)//2
+        set_0 = train[:wedge]
+        set_1 = train[wedge:]
+        return set_0, set_1, val
 
 class Basic:
     def __init__(self, map_path):
