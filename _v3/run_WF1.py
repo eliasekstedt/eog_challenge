@@ -21,6 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}'
+    tag = tag + '_breakdown'
 
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
@@ -31,16 +32,13 @@ def main():
 
     hparam = {'batch_size': 64,
             'nr_epochs': 20,
-            'weight_decay': 1e-5,
+            'weight_decay': 8.38e-5,
             'dropout_rate': 0.0,
             'augment_method': ['rcrop', 'hflip'],
             'crop_ratio': 0.5,
             'usize': 128,
             'penalty': 1}
     
-    with open('eval_test.txt', 'a') as file:
-        file.write('\n#######################################')
-
     for i in range(10):
         from WF1_classifier.Flow import Workflow
         workflow = Workflow(path=path, hparam=hparam, tag=tag)
@@ -52,7 +50,7 @@ def main():
         workflow.evaluate()
         cm = workflow.evaluator.cmatrix
         with open('eval_test.txt', 'a') as file:
-            file.write(f'\n{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}')
+            file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
 
 
 

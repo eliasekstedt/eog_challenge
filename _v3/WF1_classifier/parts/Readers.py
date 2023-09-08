@@ -61,13 +61,7 @@ class Reader(Dataset):
             image = self.hflip(image)
         if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
             image = self.final_resize(image)
-        """
-        if np.random.uniform(0, 1) < 0.80 and 'fourier' in self.augment_method:
-            to_pil = ToPILImage()
-            image = to_pil(image)
-            self.blocker.transform(image)
-            image = self.blocker.image
-        """
+        
         return image
 
     def rcrop(self, image):
@@ -75,7 +69,20 @@ class Reader(Dataset):
         return crop(image)
         #return crop(image[:,int(image.shape[1]*0.25):, :]) # COMPARE (UP TO CR=0.7) 
 
+
+
+
+
+
+
 """
+
+        if np.random.uniform(0, 1) < 0.80 and 'fourier' in self.augment_method:
+            to_pil = ToPILImage()
+            image = to_pil(image)
+            self.blocker.transform(image)
+            image = self.blocker.image
+
 class Fblocker:
     def __init__(self):
         self.image = None

@@ -328,7 +328,7 @@ def test12():
 def test13():
     from WF1_classifier.parts.Tools import gp_plot
     l_bound, u_bound = 0, 1
-    gp_plot([l_bound, u_bound])
+    gp_plot([l_bound, u_bound], 'gp_logs/data_cr.txt', 'cr')
 
 def test14():
     pass

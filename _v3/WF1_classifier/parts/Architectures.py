@@ -5,7 +5,6 @@ import torchvision.models as models
 import torch.nn.functional as F
 import warnings
 
-
 class Architecture(nn.Module):
     def __init__(self):
         super(Architecture, self).__init__()
@@ -18,3 +17,31 @@ class Architecture(nn.Module):
     def forward(self, x):
         return self.resnet(x)
     
+
+"""
+class Architecture(nn.Module):
+    def __init__(self):
+        super(Architecture, self).__init__()
+        self.coreblock = self.Coreblock()
+        self.outblock = self.Outblock()
+
+    def forward(self, x):
+        x = self.coreblock(x)
+        return x
+    
+    class Coreblock(nn.Module):
+        def __init__(self):
+            self.block = nn.Conv2d(3, 1, 3)
+        
+        def forward(self, x):
+            x = self.block(x)
+            return x
+
+    class Outblock(nn.Module):
+        def __init__(self, nri, nro):
+            self.block = nn.Linear(nri, nro)
+        
+        def forward(self, x):
+            x = self.block(x)
+            return x
+"""

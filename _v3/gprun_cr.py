@@ -23,7 +23,7 @@ from skopt.space import Real
 
 def objective(param):
     tag = f'WF1_{str(datetime.now())[8:10]}'
-    tag = tag + '/gp_wd_r01'
+    tag = tag + '/_gp_cr'
 
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
@@ -34,10 +34,10 @@ def objective(param):
 
     hparam = {'batch_size': 64,
             'nr_epochs': 20,
-            'weight_decay': param[0],
+            'weight_decay': 9.43e-5,
             'dropout_rate': 0.0,
             'augment_method': ['rcrop', 'hflip'],
-            'crop_ratio': 0.5,
+            'crop_ratio': param[0],
             'usize': 128,
             'penalty': 1}
     
@@ -51,22 +51,22 @@ def objective(param):
     workflow.evaluate()
     cm = workflow.evaluator.cmatrix
     accuracy = (cm[0,0] + cm[1,1])/cm.sum()
-    with open('gp_wd_data.txt', 'a') as file:
-        file.write(f'{accuracy}\t{hparam["weight_decay"]}\t{round(toc-tic)}\n')
+    with open('gp_logs/data_cr.txt', 'a') as file:
+        file.write(f'{accuracy}\t{hparam["crop_ratio"]}\t{round(toc-tic)}\n')
     return 1-accuracy
     
 
 def main():
-    l_bound, u_bound = 0, 1
+    l_bound, u_bound = 0.01, 0.99
     space = [Real(l_bound, u_bound, name='wd')]
-    result = gp_minimize(objective, space, n_calls=25, acq_func='EI', n_random_starts=5)
+    result = gp_minimize(objective, space, n_calls=50, acq_func='EI', n_random_starts=5)
     print('optimization finished\n')
     best_param = result.x[0]
     print(f'best_param: {best_param}')
-    with open('gp_results.txt', 'a') as file:
+    with open('gp_logs/results_cr.txt', 'a') as file:
         file.write(f'best_param: {best_param}')
     from WF1_classifier.parts.Tools import gp_plot
-    gp_plot([l_bound, u_bound])
+    gp_plot([l_bound, u_bound], 'gp_logs/data_cr.txt', 'cr')
     
 
 
