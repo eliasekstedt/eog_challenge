@@ -74,6 +74,7 @@ def main():
 
 """
 consider broader extent and splitting into validation set as well
+best_param: 7.839123453947553e-05
 """
 
 
