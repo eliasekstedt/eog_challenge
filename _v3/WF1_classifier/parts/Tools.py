@@ -92,7 +92,12 @@ def plot_by_ctx_feature(runpath):
     df = pd.concat([gpdf, gndf], axis=0)
     df = df[df.columns[5:]].reset_index()
     df = df[['category'] + df.columns[1:-1].tolist()]
-    categories = ['gsf', 'gsm', 'gss', 'gsv', 'ddr', 'dds', 'dfd', 'dg', 'dnd', 'dps', 'dwd', 'dwn', 'sl0', 'sl1', 'sr0', 'sr1']
+    rn_dict = {'growth_stage_F':'gsf', 'growth_stage_M':'gsm', 'growth_stage_S':'gss', 'growth_stage_V':'gsv',
+       'damage_DR':'ddr', 'damage_DS':'dds', 'damage_FD':'dfd', 'damage_G':'dg', 'damage_ND':'dnd', 'damage_PS':'dps',
+       'damage_WD':'dwd', 'damage_WN':'dwn','season_LR2020':'sl0', 'season_LR2021':'sl1', 'season_SR2020':'ss0',
+       'season_SR2021':'ss1'}
+    df.rename(columns=rn_dict, inplace=True)
+    categories = df.columns[1:]
     vals = np.array(df[df.columns[1:]]).T
 
     barwidth = 0.15
@@ -155,8 +160,16 @@ def scatter_matrix(df, metric):
     plt.close('all')
     #plt.show()
 
-
-
+def gp_plot(xlim):
+    df = pd.read_csv('gp_wd_data.txt', sep='\t', header=None)
+    df.columns = ['accuracy', 'wd', 'time']
+    x = np.array(df['wd'].to_list())
+    y = np.array([[yy] for yy in df['accuracy']])
+    plt.plot(x, y, 'o', color='black')
+    plt.xlim(xlim)
+    plt.savefig('gp_results.png')
+    plt.figure()
+    plt.close('all')
 
 
 

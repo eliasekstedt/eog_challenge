@@ -241,28 +241,94 @@ def test9():
     plt.xticks(positions[0] + 1.5*barwidth, categories)
     plt.legend()
     plt.show()
-    
-
-    
-
-
-
 
 def test10():
     print(str(datetime.now())[8:10])
 
 def test11():
     # figuring out what goes wrong with the barplot
-    runpath = 'run/WF1_05/05_07_42_16/'
+    d = pd.read_csv('CSV/Val.csv')
+    #print(d.columns)
+    runpath = 'run/WF1_08/08_11_25_53/'
     from WF1_classifier.parts.Tools import plot_by_ctx_feature
     plot_by_ctx_feature(runpath)
 
 
 def test12():
-    pass
+    def least_squares(x, X, y):
+        theta = np.linalg.pinv(X.T@X)@X.T@y
+        return theta
+
+    def blr_approach(X, y, sigma):
+        def get_is0(s0):
+            return np.linalg.pinv(s0)
+        def get_betaXTX(beta, X):
+            return beta*X.T@X
+        def get_sN(is0, betaXTX):
+            return np.linalg.pinv(is0 + betaXTX)
+        def get_is0m0(is0, m0):
+            return is0@m0
+        def get_betaXTy(beta, X, y):
+            return beta*X.T@y
+        def get_mN(sN, is0m0, betaXTy):
+            return sN@(is0m0 + betaXTy)
+        
+        beta = 1/sigma**2
+        s0 = np.array([[1, 0], [0, 1]])
+        m0 = np.array([[0], [0]])
+
+        is0 = get_is0(s0)
+        betaXTX = get_betaXTX(beta, X)
+        sN = get_sN(is0, betaXTX)
+        is0m0 = get_is0m0(is0, m0)
+        betaXTy = get_betaXTy(beta, X, y)
+        mN = get_mN(sN, is0m0, betaXTy)
+        return sN, mN
+
+    df = pd.read_csv('gp_test.txt', sep=', ', header=None)#.head(9)
+    df.columns = ['accuracy', 'wd', 'time']
+    x = np.array(df['wd'].to_list())
+    ###
+    #x = np.array(range(5))
+    #y = [xx*np.random.uniform(-1, 1) for xx in x]
+    #y = np.array([[yy] for yy in y])
+    ###
+    X = np.array([[1, xx] for xx in x])
+    y = np.array([[yy] for yy in df['accuracy']])
+    #theta = least_squares(x, X, y)
+
+    sigma = 1 ## test
+    sN, mN = blr_approach(X, y, sigma)
+    
+    #xH = np.linspace(x.min(), x.max(), 100)
+    print(x.max())
+    xH = np.linspace(0, 1, 100)
+    XH = np.array([[1, xx] for xx in xH])
+    #yH = (XH@theta).flatten()
+
+    mH = (XH@mN).flatten()
+    sH = np.diag(XH@sN@XH.T) + sigma**2
+    print(mN)
+    print(sN)
+    #1/0
+
+    xlim = [1e-6, 1e-4]
+    ylim = [0.8, 1.2]
+    plt.plot(x, y, 'o', color='black')
+    #plt.plot(xH, yH)
+    #plt.xlim(xlim)
+    #plt.ylim(ylim)
+
+    plt.plot(xH, mH, color='black')
+    plt.fill_between(xH, mH-1*sH, mH+1*sH, alpha=0.3, color='blue')
+    plt.fill_between(xH, mH-2*sH, mH+2*sH, alpha=0.3, color='blue')
+    plt.show()
+
 
 def test13():
-    pass
+    from WF1_classifier.parts.Tools import gp_plot
+    l_bound, u_bound = 0, 1e-3
+    gp_plot([l_bound, u_bound])
 
 def test14():
     pass
@@ -272,6 +338,8 @@ def test15():
 
 
 def main():
+    #test13()
+    #test12()
     test11()
     #test10()
     #test9()

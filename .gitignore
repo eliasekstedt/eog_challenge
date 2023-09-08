@@ -5,4 +5,5 @@ __pycache__/
 model.pth
 _notes/
 
-*gp_test.txt
+*.txt
+*.png
