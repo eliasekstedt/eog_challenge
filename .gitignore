@@ -5,5 +5,5 @@ __pycache__/
 model.pth
 _notes/
 
-eval_test.txt
 gp_logs/
+*.txt

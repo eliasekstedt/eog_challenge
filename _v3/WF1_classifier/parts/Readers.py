@@ -22,9 +22,10 @@ def show(image, runpath='', title=''):
     plt.show()
 
 class Reader(Dataset):
-    def __init__(self, path_csv, path_im, usize, augment_method=[], crop_ratio=None, eval=False):
+    def __init__(self, path_csv, path_im, usize, augment_method=[], crop_ratio=None, crop_freq=None, eval=False):
         self.augment_method = augment_method
         self.crop_ratio = crop_ratio
+        self.crop_freq = crop_freq
         self.usize = usize
         self.set = pd.read_csv(path_csv)
         self.path_im = path_im
@@ -55,19 +56,18 @@ class Reader(Dataset):
             return image, label, filename
 
     def augment(self, image):
-        if np.random.uniform(0, 1) < 0.50 and 'rcrop' in self.augment_method:
+        if 'rcrop' in self.augment_method and np.random.uniform(0, 1) < self.crop_freq:
             image = self.rcrop(image)
-        if np.random.uniform(0, 1) < 0.5 and 'hflip' in self.augment_method:
+        if 'hflip' in self.augment_method and np.random.uniform(0, 1) < 0.5:
             image = self.hflip(image)
         if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
             image = self.final_resize(image)
-        
         return image
 
     def rcrop(self, image):
-        crop = RandomCrop((int(image.shape[1]*self.crop_ratio), int(image.shape[2]*self.crop_ratio))) 
-        return crop(image)
-        #return crop(image[:,int(image.shape[1]*0.25):, :]) # COMPARE (UP TO CR=0.7) 
+        crop = RandomCrop((int(image.shape[1]*self.crop_ratio), int(image.shape[2]*self.crop_ratio)))
+        return crop(image[:,int(image.shape[1]*0.25):, :]) # COMPARE (UP TO CR=0.7) 
+        #return crop(image)
 
 
 

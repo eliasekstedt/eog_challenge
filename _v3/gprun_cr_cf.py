@@ -25,19 +25,21 @@ def main():
             'unlabeled':'../data/test/'
             }
 
-    setup = {'tag':'cr',
-             'hpq':'crop_ratio',
-             'bound': [0.01, 0.99],
-             'n_calls': 2}
+    setup = {'tag':'cr_cf',                                             #
+             'key_for_opt': ['crop_ratio', 'crop_freq'],                #
+             'bounds': [(0.01, 0.99), (0, 1)],                          #
+             'n_calls': 200}
     
     hparam = {'batch_size': 64,
-            'nr_epochs': 1,
+            'nr_epochs': 20,
             'weight_decay': 9.428542092781991e-05,
             'dropout_rate': 0.0,
-            'augment_method': ['rcrop', 'hflip'],
-            'crop_ratio': None,
             'usize': 128,
-            'penalty': 1}
+            'penalty': 1,
+            'method': ['rcrop', 'hflip'],
+            'crop_ratio': None,                                           #
+            'crop_freq': None}                                            #
+    
 
 
     gp_init_time = datetime.now()
@@ -49,7 +51,7 @@ def main():
     opt = Optimizer(logpath, setup, path, hparam)
     opt.optimize()
 
-    print('optimization finished')
+    print(f'optimization finished in {round(opt.rank["time"].sum()/3600, 2)} h')
     print(opt.rank)
 
 
@@ -70,7 +72,29 @@ best_param: 7.839123453947553e-05
     #with open(f'{logpath}data.txt', 'a') as file:
     #    file.write(f'\nbest_param: {best_param}')
 
+"""
+for multiple:
+####################################
+from skopt import gp_minimize
 
+# Define the parameter space
+space = [
+    [0, 1],             # Binary parameter (0 or 1)
+    (0.0, 1.0),         # Continuous parameter between 0 and 1
+    (0.01, 0.99)        # Continuous parameter between 0.01 and 0.99
+]
+
+# Define the objective function
+def objective(params):
+    binary_param, continuous_param1, continuous_param2 = params
+    # Your objective function here, which uses the parameters
+    # ...
+    return your_metric_here
+
+# Perform the optimization
+res = gp_minimize(objective, space)
+
+"""
 
 
 if __name__ == '__main__':
