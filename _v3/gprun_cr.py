@@ -34,7 +34,7 @@ def objective(param):
 
     hparam = {'batch_size': 64,
             'nr_epochs': 20,
-            'weight_decay': 9.43e-5,
+            'weight_decay': 9.428542092781991e-05,
             'dropout_rate': 0.0,
             'augment_method': ['rcrop', 'hflip'],
             'crop_ratio': param[0],

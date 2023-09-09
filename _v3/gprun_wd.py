@@ -57,7 +57,7 @@ def objective(param):
     
 
 def main():
-    l_bound, u_bound = 0, 1
+    l_bound, u_bound = 0, 1e-2 # new interval from previous tests
     space = [Real(l_bound, u_bound, name='wd')]
     result = gp_minimize(objective, space, n_calls=25, acq_func='EI', n_random_starts=5)
     print('optimization finished\n')
