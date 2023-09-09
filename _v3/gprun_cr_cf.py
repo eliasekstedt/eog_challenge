@@ -27,7 +27,7 @@ def main():
 
     setup = {'tag':'cr_cf',                                             #
              'key_for_opt': ['crop_ratio', 'crop_freq'],                #
-             'bounds': [(0.01, 0.99), (0.0, 1.0)],                      #
+             'bounds': [(0.01, 0.74), (0.0, 1.0)],                      #
              'n_calls': 200}
     
     hparam = {'batch_size': 64,
