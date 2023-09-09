@@ -1,10 +1,8 @@
 
 import os
 from datetime import datetime
-import time
 import numpy as np
 import torch
-import pandas
 
 # make deterministic
 import random
@@ -18,13 +16,8 @@ torch.backends.cudnn.benchmark = False
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
-from skopt import gp_minimize
-from skopt.space import Real
 
-def objective(param):
-    tag = f'WF1_{str(datetime.now())[8:10]}'
-    tag = tag + '/_gp_cr'
-
+def main():
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
             'val':'WF1_classifier/csv/val.csv',
@@ -32,42 +25,32 @@ def objective(param):
             'unlabeled':'../data/test/'
             }
 
+    setup = {'tag':'cr',
+             'hpq':'crop_ratio',
+             'bound': [0.01, 0.99],
+             'n_calls': 2}
+    
     hparam = {'batch_size': 64,
-            'nr_epochs': 20,
+            'nr_epochs': 1,
             'weight_decay': 9.428542092781991e-05,
             'dropout_rate': 0.0,
             'augment_method': ['rcrop', 'hflip'],
-            'crop_ratio': param[0],
+            'crop_ratio': None,
             'usize': 128,
             'penalty': 1}
-    
-    from WF1_classifier.Flow import Workflow
-    workflow = Workflow(path=path, hparam=hparam, tag=tag)
-    workflow.load_data()
-    workflow.initiate_run()
-    tic = time.perf_counter()
-    workflow.learn_parameters()
-    toc = time.perf_counter()
-    workflow.evaluate()
-    cm = workflow.evaluator.cmatrix
-    accuracy = (cm[0,0] + cm[1,1])/cm.sum()
-    with open('gp_logs/data_cr.txt', 'a') as file:
-        file.write(f'{accuracy}\t{hparam["crop_ratio"]}\t{round(toc-tic)}\n')
-    return 1-accuracy
-    
 
-def main():
-    l_bound, u_bound = 0.01, 0.99
-    space = [Real(l_bound, u_bound, name='wd')]
-    result = gp_minimize(objective, space, n_calls=50, acq_func='EI', n_random_starts=5)
-    print('optimization finished\n')
-    best_param = result.x[0]
-    print(f'best_param: {best_param}')
-    with open('gp_logs/results_cr.txt', 'a') as file:
-        file.write(f'best_param: {best_param}')
-    from WF1_classifier.parts.Tools import gp_plot
-    gp_plot([l_bound, u_bound], 'gp_logs/data_cr.txt', 'cr')
+
+    gp_init_time = datetime.now()
+    logpath = f'gp_logs/{setup["tag"]}_{str(gp_init_time)[8:10]}_{str(gp_init_time)[11:13]}_{str(gp_init_time)[14:16]}_{str(gp_init_time)[17:19]}/'
+    if not os.path.isdir(logpath):
+        os.makedirs(logpath)
     
+    from WF1_classifier.parts.Optimizer import Optimizer
+    opt = Optimizer(logpath, setup, path, hparam)
+    opt.optimize()
+
+    print('optimization finished')
+    print(opt.rank)
 
 
 
@@ -81,7 +64,11 @@ best_param: 7.839123453947553e-05
 
 
 
+    #with open(f'{logpath}data.txt', 'a') as file:
+    #    file.write(f'{accuracy}\t{param}\t{round(took)}\n')
 
+    #with open(f'{logpath}data.txt', 'a') as file:
+    #    file.write(f'\nbest_param: {best_param}')
 
 
 

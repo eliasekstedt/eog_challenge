@@ -160,14 +160,13 @@ def scatter_matrix(df, metric):
     plt.close('all')
     #plt.show()
 
-def gp_plot(xlim, file_name, tag):
-    df = pd.read_csv(file_name, sep='\t', header=None)
-    df.columns = ['accuracy', 'wd', 'time']
-    x = np.array(df['wd'].to_list())
+def gp_plot(df, xlim, logpath):
+    x = np.array(df['param'].to_list())
     y = np.array([[yy] for yy in df['accuracy']])
     plt.plot(x, y, 'o', color='black')
+    plt.plot(x[-1], y[-1], 'o', color='blue')
     plt.xlim(xlim)
-    plt.savefig(f'gp_logs/results_{tag}.png')
+    plt.savefig(f'{logpath}scatter.png')
     plt.figure()
     plt.close('all')
 

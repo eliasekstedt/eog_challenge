@@ -326,9 +326,12 @@ def test12():
 
 
 def test13():
-    from WF1_classifier.parts.Tools import gp_plot
+    logpath = 'gp_logs/cr_09_09_12_24/gp_log.txt'
+    df = pd.read_csv(logpath, sep='\t')
+    print(df)
     l_bound, u_bound = 0, 1
-    gp_plot([l_bound, u_bound], 'gp_logs/data_cr.txt', 'cr')
+    from WF1_classifier.parts.Tools import gp_plot
+    gp_plot(df, [l_bound, u_bound], logpath)
 
 def test14():
     pass
