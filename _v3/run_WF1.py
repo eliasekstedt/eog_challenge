@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}'
-    tag = tag + '_breakdown'
+    tag = tag + '_ynvf_short'
 
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
@@ -31,26 +31,35 @@ def main():
             }
 
     hparam = {'batch_size': 64,
-            'nr_epochs': 20,
-            'weight_decay': 8.38e-5,
+            'nr_epochs': 9,
+            'weight_decay': 9.428542092781991e-05,
             'dropout_rate': 0.0,
-            'augment_method': ['rcrop', 'hflip'],
-            'crop_ratio': 0.5,
             'usize': 128,
-            'penalty': 1}
+            'penalty': 1,
+            'method': ['hflip', 'vflip'],
+            'crop_ratio': None,
+            'crop_freq': None}
     
-    for i in range(10):
-        from WF1_classifier.Flow import Workflow
-        workflow = Workflow(path=path, hparam=hparam, tag=tag)
-        workflow.load_data()
-        workflow.initiate_run()
-        tic = time.perf_counter()
-        workflow.learn_parameters()
-        toc = time.perf_counter()
-        workflow.evaluate()
-        cm = workflow.evaluator.cmatrix
-        with open('eval_test.txt', 'a') as file:
-            file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
+
+    methods = [[], ['hflip'], ['vflip'], ['hflip', 'vflip']]
+    for method in methods:
+        hparam['method'] = method
+
+        from Universal.Tools import file_it
+        file_it('eval_test.txt', f'############# {method} #############')
+        
+        for i in range(10):
+            from WF1_classifier.Flow import Workflow
+            workflow = Workflow(path=path, hparam=hparam, tag=tag)
+            workflow.load_data()
+            workflow.initiate_run()
+            tic = time.perf_counter()
+            workflow.learn_parameters()
+            toc = time.perf_counter()
+            workflow.evaluate()
+            cm = workflow.evaluator.cmatrix
+            with open('eval_test.txt', 'a') as file:
+                file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
 
 
 

@@ -7,7 +7,7 @@ from torchvision.io import read_image
 
 
 from PIL import Image
-from torchvision.transforms import RandomCrop, ToTensor, ToPILImage, Compose, RandomHorizontalFlip, Resize
+from torchvision.transforms import RandomCrop, ToTensor, ToPILImage, Compose, RandomHorizontalFlip, RandomVerticalFlip, Resize
 
 import matplotlib.pyplot as plt
 def show(image, runpath='', title=''):
@@ -32,6 +32,7 @@ class Reader(Dataset):
         self.eval = eval
         #self.blocker = Fblocker()
         self.hflip = RandomHorizontalFlip()
+        self.vflip = RandomVerticalFlip()
         self.ini_resize = Compose([ToPILImage(), Resize((1024, 1024)), ToTensor()])
         self.final_resize = Compose([ToPILImage(), Resize((self.usize, self.usize)), ToTensor()])
 
@@ -60,6 +61,8 @@ class Reader(Dataset):
             image = self.rcrop(image)
         if 'hflip' in self.augment_method and np.random.uniform(0, 1) < 0.5:
             image = self.hflip(image)
+        if 'vflip' in self.augment_method and np.random.uniform(0, 1) < 0.5:
+            image = self.vflip(image)
         if (image.shape[1], image.shape[2]) != (self.usize, self.usize):
             image = self.final_resize(image)
         return image
