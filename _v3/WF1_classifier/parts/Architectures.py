@@ -5,6 +5,7 @@ import torchvision.models as models
 import torch.nn.functional as F
 import warnings
 
+"""
 class Architecture(nn.Module):
     def __init__(self):
         super(Architecture, self).__init__()
@@ -20,28 +21,65 @@ class Architecture(nn.Module):
 
 """
 class Architecture(nn.Module):
-    def __init__(self):
+    def __init__(self, dropout_rate):
+        print('using dlia3 architecture')
         super(Architecture, self).__init__()
-        self.coreblock = self.Coreblock()
-        self.outblock = self.Outblock()
+        self.block8 = self.Block8(3, 8)
+        self.block16 = self.Block16(8, 16)
+        self.block32 = self.Block32(16, 32)
+        self.outblock = self.OutBlock(32*32*32, dropout_rate) #128 -> stridex2 -> 32, also 32 input channels
 
     def forward(self, x):
-        x = self.coreblock(x)
+        x = self.block8(x)
+        x = self.block16(x)
+        x = self.block32(x)
+        x = torch.flatten(x, 1)
+        x = self.outblock(x)
         return x
-    
-    class Coreblock(nn.Module):
-        def __init__(self):
-            self.block = nn.Conv2d(3, 1, 3)
-        
-        def forward(self, x):
-            x = self.block(x)
-            return x
 
-    class Outblock(nn.Module):
-        def __init__(self, nri, nro):
-            self.block = nn.Linear(nri, nro)
+    class Block8(nn.Module):
+        def __init__(self, c_in, c_out):
+            super().__init__()
+            self.block = nn.Sequential(
+                nn.Conv2d(c_in, c_out, 3, 1, 1), 
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, stride=2)
+            )
+
+        def forward(self, x):
+            return self.block(x)
+        
+    class Block16(nn.Module):
+        def __init__(self, c_in, c_out):
+            super().__init__()
+            self.block = nn.Sequential(
+                nn.Conv2d(c_in, c_out, 3, 1, 1),
+                nn.ReLU(),
+                nn.MaxPool2d(kernel_size=2, stride=2)
+            )
+    
+        def forward(self, x):
+            return self.block(x)
+        
+    class Block32(nn.Module):
+        def __init__(self, c_in, c_out):
+            super().__init__()
+            self.block = nn.Sequential(
+                nn.Conv2d(c_in, c_out, 3, 1, 1),
+                nn.ReLU(),
+            )
         
         def forward(self, x):
-            x = self.block(x)
-            return x
-"""
+            return self.block(x)
+        
+    class OutBlock(nn.Module):
+        def __init__(self, size, dropout_rate):
+            super().__init__()
+            self.block = nn.Sequential(
+                nn.Dropout(dropout_rate),
+                nn.Linear(size, 1)
+            )
+        
+        def forward(self, x):
+            return self.block(x)
+

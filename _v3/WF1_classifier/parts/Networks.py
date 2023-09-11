@@ -24,14 +24,15 @@ if see:
 
 
 class Net(nn.Module):
-    def __init__(self, weight_decay=0):
+    def __init__(self, weight_decay, dropout_rate):
         super(Net, self).__init__()
         self.criterion = torch.nn.BCEWithLogitsLoss()
         self.traincost, self.testcost = [], []
         self.trainaccuracy, self.testaccuracy = [], []
         self.record_performance = [0]
         # architecture
-        self.architecture = Architecture()
+        self.architecture = Architecture(dropout_rate)
+        #self.architecture = Architecture()
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
 
     def forward(self, x):
