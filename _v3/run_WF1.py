@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}'
-    tag = tag + 'init_test_of_dlia3_arch'
+    tag = tag + 'mnist_arch_assembly_test'
 
     path = {'set_0':'WF1_classifier/csv/set_0.csv',
             'set_1':'WF1_classifier/csv/set_1.csv',
@@ -31,7 +31,7 @@ def main():
             }
 
     hparam = {'batch_size': 64,
-            'nr_epochs': 50,
+            'nr_epochs': 40,
             'weight_decay': 9.428542092781991e-05,
             'dropout_rate': 0.0,
             'usize': 128,

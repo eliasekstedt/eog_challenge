@@ -31,7 +31,7 @@ def main():
              'n_calls': 25}
     
     hparam = {'batch_size': 64,
-            'nr_epochs': None,
+            'nr_epochs': 32,
             'weight_decay': None, #9.428542092781991e-05,
             'dropout_rate': None, #0.0
             'usize': 128,
