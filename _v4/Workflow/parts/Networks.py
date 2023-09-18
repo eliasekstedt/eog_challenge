@@ -9,7 +9,7 @@ from Workflow.parts.Architectures import Architecture
 
 ###
 
-see = True
+see = False
 if see:
     import matplotlib.pyplot as plt
     def show(image, runpath='', title=''):
@@ -36,8 +36,8 @@ class Net(nn.Module):
         self.s_traincost, self.s_testcost = [], []
         self.record_performance = []
         # architecture
-        #self.architecture = Architecture(dropout_rate) # dlia3 version
-        self.architecture = Architecture() # eog_version
+        self.architecture = Architecture(dropout_rate) # dlia3 version
+        #self.architecture = Architecture() # eog_version
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
 
     def forward(self, x):
@@ -47,8 +47,8 @@ class Net(nn.Module):
     def train_epoch(self, trainloader, device):
         self.train()
         cost, s_cost = 0, 0
-        for batch_images, batch_labels, _ in trainloader: # loop iterations correspond to batches
-            x, labels = batch_images.to(device), batch_labels.to(device)
+        for batch_images, batch_context, batch_labels, _ in trainloader: # loop iterations correspond to batches
+            x, context, labels = batch_images.to(device), batch_context.to(device), batch_labels.to(device)
             ###
             if see:
                 """
@@ -63,7 +63,7 @@ class Net(nn.Module):
                     show(batch_images[i])
             ###
             # prediction error
-            logits = self(x)
+            logits = self(x, context)
             loss = self.criterion(logits, labels)
             s_loss = self.s_criterion(logits, labels)
             # Backpropagation
@@ -81,9 +81,9 @@ class Net(nn.Module):
         self.eval()
         cost, s_cost = 0, 0
         with torch.no_grad(): # disable gradient calculation
-            for batch_images, batch_labels, _ in testloader:
-                x, labels = batch_images.to(device), batch_labels.to(device)
-                logits = self(x)
+            for batch_images, batch_context, batch_labels, _ in testloader:
+                x, context, labels = batch_images.to(device), batch_context.to(device), batch_labels.to(device)
+                logits = self(x, context)
                 loss = self.criterion(logits, labels)
                 s_loss = self.s_criterion(logits, labels)
                 # record cost & accuracy

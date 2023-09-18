@@ -42,6 +42,11 @@ class Reader(Dataset):
     def __getitem__(self, idx):
         row = self.set.iloc[idx]
         filename = row['filename']
+        context = row[self.set.columns[3:]]
+        #print(context)
+        #print(len(context))
+        #1/0
+
         image = read_image(f'{self.path_im}{filename}')/255
         image = image.type(torch.float32)
         #title = f'{row["extent"]}| {row["growth_stage_F"]}, {row["growth_stage_M"]}, {row["growth_stage_S"]}, {row["growth_stage_V"]}'
@@ -49,12 +54,12 @@ class Reader(Dataset):
         image = self.augment(image)
         if self.eval:
             id = row['ID']
-            return image, id, filename
+            return image, context, id, filename
         else:
             label = torch.tensor([row['extent']], dtype=torch.float32)
             #title = f'{row["extent"]}| {row["growth_stage_F"]}, {row["growth_stage_M"]}, {row["growth_stage_S"]}, {row["growth_stage_V"]}'
             #show(image, title=title)
-            return image, label, filename
+            return image, context, label, filename
 
     def augment(self, image):
         if 'rcrop' in self.augment_method and np.random.uniform(0, 1) < self.crop_freq:

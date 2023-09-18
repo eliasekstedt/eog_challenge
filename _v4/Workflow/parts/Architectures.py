@@ -8,18 +8,41 @@ import warnings
 """
 """
 class Architecture(nn.Module):
-    def __init__(self):
+    def __init__(self, dropout_rate):
         super(Architecture, self).__init__()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         warnings.filterwarnings("ignore", category=UserWarning)
         self.resnet = models.resnet18(pretrained=True)
-        num_ftrs = self.resnet.fc.in_features
-        self.resnet.fc = torch.nn.Linear(num_ftrs, 1)
+        num_ftrs = self.resnet.fc.in_features + 16
 
-    def forward(self, x):
-        return self.resnet(x)
+        self.resnet = nn.Sequential(*list(self.resnet.children())[:-1]) # removes the last layer
+        self.fcblock = FCBlock(num_ftrs, dropout_rate)
+
+        #self.resnet.fc = torch.nn.Linear(num_ftrs, 1)
+
+    def forward(self, x, context):
+        x = self.resnet(x)
+        x = x.view(x.size(0), -1)
+        x = self.fcblock(torch.cat((x, context), dim=1))
+        return x
     
-
+class FCBlock(nn.Module):
+    def __init__(self, nr_fc_in, dropout_rate):
+        super(FCBlock, self).__init__()
+        self.block = nn.Sequential(
+            #nn.BatchNorm1d(nr_fc_in),
+            nn.Linear(nr_fc_in, 256),
+            nn.ReLU(),
+            #nn.BatchNorm1d(256),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            #nn.BatchNorm1d(128),
+            nn.Dropout(dropout_rate),
+            nn.Linear(128, 1)
+        )
+    
+    def forward(self, x):
+        return self.block(x)
 
 """
 class Architecture(nn.Module):

@@ -21,9 +21,9 @@ class Evaluator:
         model.eval()
         with torch.no_grad():
             preds, ids = None, None
-            for i, (batch_image, batch_ids, _) in enumerate(loader):
-                batch_image = batch_image.to(device)
-                batch_outputs = model(batch_image)
+            for i, (batch_image, batch_context, batch_ids, _) in enumerate(loader):
+                batch_image, batch_context = batch_image.to(device), batch_context.to(device)
+                batch_outputs = model(batch_image, batch_context)
                 batch_outputs = tuple([el[0].item() for el in batch_outputs])
                 ### check the distribution here and how this differs from what is returnded
                 if preds is None and ids is None:
