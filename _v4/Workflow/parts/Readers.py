@@ -42,7 +42,8 @@ class Reader(Dataset):
     def __getitem__(self, idx):
         row = self.set.iloc[idx]
         filename = row['filename']
-        context = row[self.set.columns[3:]]
+        context = torch.tensor(self.set.iloc[idx, 3:].tolist(), dtype=torch.float32)
+        #context = row[self.set.columns[3:]]
         #print(context)
         #print(len(context))
         #1/0

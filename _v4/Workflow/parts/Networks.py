@@ -40,8 +40,8 @@ class Net(nn.Module):
         #self.architecture = Architecture() # eog_version
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
 
-    def forward(self, x):
-        x = self.architecture(x)
+    def forward(self, x, context):
+        x = self.architecture(x, context)
         return x
     
     def train_epoch(self, trainloader, device):
