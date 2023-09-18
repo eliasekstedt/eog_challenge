@@ -24,7 +24,7 @@ class HotnCode:
         return trainsplit, testsplit
     
     def write(self, subset=False):
-        n = 20
+        n = 50
         if subset:
             self.fold0.head(len(self.fold0)//n).to_csv(self.out_dir+'set_0.csv', index=False)
             self.fold1.head(len(self.fold1)//n).to_csv(self.out_dir+'set_1.csv', index=False)
@@ -38,7 +38,7 @@ map_path = 'CSV/original/Train.csv'
 valmap_path = 'CSV/original/Test.csv'
 out_dir = 'Workflow/csv/'
 
-HotnCode(map_path, valmap_path, out_dir, subset=False)
+HotnCode(map_path, valmap_path, out_dir, subset=True)
 
 
 """
