@@ -38,7 +38,7 @@ map_path = 'CSV/original/Train.csv'
 valmap_path = 'CSV/original/Test.csv'
 out_dir = 'Workflow/csv/'
 
-HotnCode(map_path, valmap_path, out_dir, subset=True)
+HotnCode(map_path, valmap_path, out_dir, subset=False)
 
 
 """
