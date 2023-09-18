@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import warnings
 
 """
+"""
 class Architecture(nn.Module):
     def __init__(self):
         super(Architecture, self).__init__()
@@ -19,7 +20,6 @@ class Architecture(nn.Module):
         return self.resnet(x)
     
 
-"""
 
 """
 class Architecture(nn.Module):
@@ -102,6 +102,8 @@ class Architecture(nn.Module):
         
         def forward(self, x):
             return self.block(x)
+
+"""
 
 """
 class Architecture(nn.Module):
@@ -189,3 +191,6 @@ class Architecture(nn.Module):
         
         def forward(self, x):
             return self.block(x)
+
+"""
+

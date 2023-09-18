@@ -1,6 +1,7 @@
 
 from datetime import datetime
 from Workflow.parts.lossFN import CustomLoss
+from Workflow.parts.lossFN import RMSELoss
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -28,14 +29,15 @@ class Net(nn.Module):
     def __init__(self, weight_decay, dropout_rate, penalty):
         super(Net, self).__init__()
         self.criterion = CustomLoss(penalty=penalty)
+        self.s_criterion = RMSELoss()
         #self.criterion = torch.nn.BCEWithLogitsLoss() # eog_version
         #self.criterion = nn.CrossEntropyLoss() # dlia 3 unet-like version
         self.traincost, self.testcost = [], []
-        self.trainaccuracy, self.testaccuracy = [], []
-        self.record_performance = [0]
+        self.s_traincost, self.s_testcost = [], []
+        self.record_performance = []
         # architecture
-        self.architecture = Architecture(dropout_rate) # dlia3 version
-        #self.architecture = Architecture() # eog_version
+        #self.architecture = Architecture(dropout_rate) # dlia3 version
+        self.architecture = Architecture() # eog_version
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
 
     def forward(self, x):
@@ -44,7 +46,7 @@ class Net(nn.Module):
     
     def train_epoch(self, trainloader, device):
         self.train()
-        cost, accuracy = 0, 0
+        cost, s_cost = 0, 0
         for batch_images, batch_labels, _ in trainloader: # loop iterations correspond to batches
             x, labels = batch_images.to(device), batch_labels.to(device)
             ###
@@ -63,43 +65,38 @@ class Net(nn.Module):
             # prediction error
             logits = self(x)
             loss = self.criterion(logits, labels)
+            s_loss = self.s_criterion(logits, labels)
             # Backpropagation
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
             # record cost & accuracy
             cost += loss.item()/len(trainloader)
-            accuracy += self.get_nr_accurate(logits, labels)/len(trainloader.dataset)
+            s_cost += (s_loss/len(trainloader)).item()
         self.traincost += [cost]
-        self.trainaccuracy += [accuracy]
+        self.s_traincost += [s_cost]
 
-    def get_nr_accurate(self, logits, labels, interpretability=False):
-        if interpretability: # map +-inf to range 0-1. for uncertainty estimate and adjustable thresholds
-            probs = F.sigmoid(logits)
-            preds = (probs>0.5) * 1
-        else:
-            preds = (logits>0) * 1
-        return (preds==labels).sum().item()
 
     def test_epoch(self, testloader, device):
         self.eval()
-        cost, accuracy = 0, 0
+        cost, s_cost = 0, 0
         with torch.no_grad(): # disable gradient calculation
             for batch_images, batch_labels, _ in testloader:
                 x, labels = batch_images.to(device), batch_labels.to(device)
                 logits = self(x)
                 loss = self.criterion(logits, labels)
+                s_loss = self.s_criterion(logits, labels)
                 # record cost & accuracy
                 cost += loss.item()/len(testloader)
-                accuracy += self.get_nr_accurate(logits, labels)/len(testloader.dataset)
+                s_cost += (s_loss/len(testloader)).item()
         self.testcost += [cost]
-        self.testaccuracy += [accuracy]
+        self.s_testcost += [s_cost]
 
     def log_epoch(self, header, runpath, nr_epochs):
-        epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}/{round(self.trainaccuracy[-1], 4)}\t\t{round(self.testcost[-1], 4)}/{round(self.testaccuracy[-1], 4)}\t\t{str(datetime.now())[11:19]}'
+        epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}/{round(self.s_traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}/{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
         # save model if current best
-        if min(self.trainaccuracy[-1], self.testaccuracy[-1]) >= max(self.record_performance):
-            self.record_performance.append(min(self.trainaccuracy[-1], self.testaccuracy[-1]))
+        if len(self.record_performance) == 0 or max(self.traincost[-1], self.testcost[-1]) <= min(self.record_performance):
+            self.record_performance.append(min(self.traincost[-1], self.testcost[-1]))
             torch.save(self.state_dict(), f'{runpath}model.pth')
             epoch_info = epoch_info + f'\t*save*'
         # print and log current epoch info
@@ -111,7 +108,7 @@ class Net(nn.Module):
 
     def train_model(self, trainloader, testloader, nr_epochs, runpath, device):
         print(f'beginning training {str(datetime.now())[11:19]}')
-        header = f'epoch\t\ttr:cost/acc.\t\tte:cost/acc.\t\ttime'
+        header = f'epoch\t\ttr:_c/sc.\t\tte:_c/sc.\t\ttime'
         print(header)
         for i in range(1, nr_epochs+1):
             self.train_epoch(trainloader, device)

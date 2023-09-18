@@ -20,23 +20,23 @@ torch.manual_seed(0)
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
-    tag = f'WF1_{str(datetime.now())[8:10]}'
-    tag = tag + 'mnist_arch_assembly_test'
+    tag = f'WF1_{str(datetime.now())[8:10]}_'
+    tag = tag + 'v4_initial'
 
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
-            'val':'Workflow/csv/set_1.csv',
+            'val':'Workflow/csv/val.csv',
             'labeled':'../data/train/',
             'unlabeled':'../data/test/'
             }
 
     hparam = {'batch_size': 64,
-            'nr_epochs': 1,
+            'nr_epochs': 14,
             'weight_decay': 9.428542092781991e-05,
             'dropout_rate': 0.0,
             'usize': 128,
             'penalty': 1,
-            'method': ['hflip', 'vflip'],
+            'method': ['hflip'],
             'crop_ratio': None,
             'crop_freq': None}
     
@@ -50,9 +50,9 @@ def main():
         workflow.learn_parameters()
         toc = time.perf_counter()
         workflow.evaluate()
-        cm = workflow.evaluator.cmatrix
-        with open('eval_test.txt', 'a') as file:
-            file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
+        #cm = workflow.evaluator.cmatrix
+        #with open('eval_test.txt', 'a') as file:
+        #    file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
 
 
 
