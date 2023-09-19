@@ -36,12 +36,12 @@ def main():
             'dropout_rate': 0.0,
             'usize': 128,
             'penalty': 1,
-            'method': ['hflip'],
-            'crop_ratio': None,
-            'crop_freq': None}
+            'method': ['rcrop', 'hflip'],
+            'crop_ratio': 0.5,
+            'crop_freq': 0.5}
     
 
-    for i in range(3):
+    for i in range(1):
         from Workflow.Flow import Workflow
         workflow = Workflow(path=path, hparam=hparam, tag=tag)
         workflow.load_data()

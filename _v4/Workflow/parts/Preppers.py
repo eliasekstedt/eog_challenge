@@ -2,37 +2,39 @@
 import pandas as pd
 
 class HotnCode:
-    def __init__(self, map_path, valmap_path, out_dir, subset):
+    def __init__(self, csv_path, val_path, out_dir, subset):
         self.out_dir = out_dir
-        self.datamap = pd.read_csv(map_path)
-        self.datamap = self.encoding(self.datamap)
-        self.fold0, self.fold1 = self.split()
-        self.valmap = pd.read_csv(valmap_path)
-        self.valmap = self.encoding(self.valmap)
-        self.valmap = self.valmap.sample(frac=1)
-        self.write(subset)
+        df = pd.read_csv(csv_path).sample(frac=1)
+        df = self.balance_sub_select(df)
+        df = self.encoding(df)
+        set_0, set_1 = self.split(df)
+        val = pd.read_csv(val_path).sample(frac=1)
+        val = self.encoding(val)
+        val = val.sample(frac=1)
+        print(f'set_sizes:\nset_0:\t{len(set_0)}\nset_1:\t{len(set_1)}\nval:\t{len(val)}')
+        self.write(set_0, set_1, val, out_dir)
     
+    def balance_sub_select(self, df):
+        extent_gtz = df.loc[df['extent'] > 0]
+        extent_z = df.loc[df['extent'] == 0].head(len(extent_gtz))
+        df = pd.concat([extent_gtz, extent_z], axis=0).sample(frac=1)
+        return df
+
     def encoding(self, df):
         categorical_columns = ['growth_stage', 'damage', 'season']
-        return pd.get_dummies(df, columns=categorical_columns)
+        df = pd.get_dummies(df, columns=categorical_columns)
+        return df
         
-    def split(self, ratio=0.5):
-        self.datamap = self.datamap.sample(frac=1)
-        wedge = int(len(self.datamap)*ratio)
-        trainsplit = self.datamap[:wedge]
-        testsplit = self.datamap[wedge:]
-        return trainsplit, testsplit
+    def split(self, df, ratio=0.5):
+        wedge = int(len(df)*ratio)
+        set_0 = df[:wedge]
+        set_1 = df[wedge:]
+        return set_0, set_1
     
-    def write(self, subset=False):
-        n = 50
-        if subset:
-            self.fold0.head(len(self.fold0)//n).to_csv(self.out_dir+'set_0.csv', index=False)
-            self.fold1.head(len(self.fold1)//n).to_csv(self.out_dir+'set_1.csv', index=False)
-            self.valmap.head(len(self.valmap)//n).to_csv(self.out_dir+'val.csv', index=False)
-        else:
-            self.fold0.to_csv(self.out_dir+'set_0.csv', index=False)
-            self.fold1.to_csv(self.out_dir+'set_1.csv', index=False)
-            self.valmap.to_csv(self.out_dir+'val.csv', index=False)
+    def write(self, set_0, set_1, val, out_dir):
+        set_0.to_csv(out_dir+'set_0.csv', index=False)
+        set_1.to_csv(out_dir+'set_1.csv', index=False)
+        val.to_csv(out_dir+'val.csv', index=False)
 
 map_path = 'CSV/original/Train.csv'
 valmap_path = 'CSV/original/Test.csv'
