@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}_'
-    tag = tag + 'full_context_ready'
+    tag = tag + 'testing'
 
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
@@ -40,39 +40,35 @@ def main():
             'crop_ratio': 0.5,
             'crop_freq': 0.5}
     
-
-    for i in range(1):
-        from Workflow.Flow import Workflow
-        workflow = Workflow(path=path, hparam=hparam, tag=tag)
-        workflow.load_data()
-        workflow.initiate_run()
-        tic = time.perf_counter()
-        workflow.learn_parameters()
-        toc = time.perf_counter()
-        workflow.evaluate()
-        #cm = workflow.evaluator.cmatrix
-        #with open('eval_test.txt', 'a') as file:
-        #    file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
+    methods = [['hflip'], ['hflip', 'vflip'], ['hflip', 'rcrop']]
+    for method in methods:
+        hparam['method'] = method
+        for i in range(1):
+            from Workflow.Flow import Workflow
+            workflow = Workflow(path=path, hparam=hparam, tag=tag)
+            workflow.load_data()
+            workflow.initiate_run()
+            #tic = time.perf_counter()
+            workflow.learn_parameters()
+            #toc = time.perf_counter()
+            workflow.evaluate()
+            #cm = workflow.evaluator.cmatrix
+            #with open('eval_test.txt', 'a') as file:
+            #    file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
 
 
 
 
 """
 to do:
-***ALL OF THIS IM DOING BLINDLY***
-*find optimal unrestricted crop ratio
-*find optimal restricted crop ratio
-*try other architectures: dualpathnet68, inception v3, NASNET-A-Large, unet(?) and see the intersection of misclassified images
-*find out if they are similar in the optimal weight decay parameter (gaussian optimization)
-*begin building v4 (regression): an assembly of three of these architectures and the context features.
-    should they integrate all with each other or only the context features? this choise may have a great impact on the complexity of the model.
 *implement mixed precision
 
-always write down results from testing:
-results are consistent for a large range of batch sizes and resolutions
+*run as below but with resnext as convolutional block
+*run same as below with one bn level in the FC block
+*run the same as before with new balanced datasets
+    -result:
 
-in v4 or when using the full dataset:
-*find optimal crop frequency
+
 """
 
 

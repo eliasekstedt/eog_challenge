@@ -12,16 +12,18 @@ class Architecture(nn.Module):
         super(Architecture, self).__init__()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         warnings.filterwarnings("ignore", category=UserWarning)
-        self.resnet = models.resnet18(pretrained=True)
-        num_ftrs = self.resnet.fc.in_features + 16
+        #self.conv = models.resnext50_32x4d(pretrained=True)
+        self.conv = models.resnet18(pretrained=True)
+        num_ftrs = self.conv.fc.in_features + 16
 
-        self.resnet = nn.Sequential(*list(self.resnet.children())[:-1]) # removes the last layer
+
+        self.conv = nn.Sequential(*list(self.conv.children())[:-1]) # removes the last layer
         self.fcblock = FCBlock(num_ftrs, dropout_rate)
 
         #self.resnet.fc = torch.nn.Linear(num_ftrs, 1)
 
     def forward(self, x, context):
-        x = self.resnet(x)
+        x = self.conv(x)
         x = x.view(x.size(0), -1)
         x = self.fcblock(torch.cat((x, context), dim=1))
         return x

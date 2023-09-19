@@ -26,7 +26,6 @@ hparam = {'batch_size': 64,
             'crop_freq': None}
 
 
-
 runpath = 'run/WF1_18_v4_initial/18_13_55_23/'
 model = Net(hparam['weight_decay'], hparam['dropout_rate'], hparam['penalty']).to(device)
 model.load_state_dict(torch.load(f'{runpath}model.pth'))
