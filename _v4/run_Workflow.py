@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}_'
-    tag = tag + 'testing'
+    tag = tag + 'w_balanced_sets'
 
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
@@ -36,7 +36,7 @@ def main():
             'dropout_rate': 0.0,
             'usize': 128,
             'penalty': 1,
-            'method': ['rcrop', 'hflip'],
+            'method': None,
             'crop_ratio': 0.5,
             'crop_freq': 0.5}
     
