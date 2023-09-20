@@ -27,7 +27,7 @@ class Reader(Dataset):
         self.crop_ratio = crop_ratio
         self.crop_freq = crop_freq
         self.usize = usize
-        self.set = pd.read_csv(path_csv).filter(regex='^(?!damage_)', axis=1)
+        self.set = pd.read_csv(path_csv)#.filter(regex='^(?!damage_)', axis=1)
         self.path_im = path_im
         self.eval = eval
         #self.blocker = Fblocker()

@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}_'
-    tag = tag + 'no_damage'
+    tag = tag + 'resnext'
 
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
@@ -30,7 +30,7 @@ def main():
             'unlabeled':'../data/test/'
             }
 
-    hparam = {'batch_size': 64,
+    hparam = {'batch_size': 32,
             'nr_epochs': 18,
             'weight_decay': 9.428542092781991e-05,
             'dropout_rate': 0.0,
@@ -62,9 +62,10 @@ to do:
 *implement mixed precision
 
 *run as below but with resnext as convolutional block
-
-*without damage
     -result:
+*without damage
+    -result: worse; did not converge as quickly and probably not as far had i 
+    let it go all the way.
 *same as before but shorter and wider fc component
     -result: slightly worse
 *run same as below with one bn level in the FC block

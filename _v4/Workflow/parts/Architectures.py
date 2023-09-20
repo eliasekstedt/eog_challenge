@@ -12,9 +12,9 @@ class Architecture(nn.Module):
         super(Architecture, self).__init__()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         warnings.filterwarnings("ignore", category=UserWarning)
-        #self.conv = models.resnext50_32x4d(pretrained=True)
-        self.conv = models.resnet18(pretrained=True)
-        nr_fc_in = self.conv.fc.in_features + 8
+        self.conv = models.resnext50_32x4d(pretrained=True)
+        #self.conv = models.resnet18(pretrained=True)
+        nr_fc_in = self.conv.fc.in_features + 16
 
 
         self.conv = nn.Sequential(*list(self.conv.children())[:-1]) # removes the last layer
