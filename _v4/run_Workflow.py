@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}_'
-    tag = tag + 'resnext'
+    tag = tag + 'mobV2'
 
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
@@ -30,7 +30,7 @@ def main():
             'unlabeled':'../data/test/'
             }
 
-    hparam = {'batch_size': 32,
+    hparam = {'batch_size': 64,
             'nr_epochs': 18,
             'weight_decay': 9.428542092781991e-05,
             'dropout_rate': 0.0,

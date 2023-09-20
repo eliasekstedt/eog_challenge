@@ -12,15 +12,23 @@ class Architecture(nn.Module):
         super(Architecture, self).__init__()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         warnings.filterwarnings("ignore", category=UserWarning)
-        self.conv = models.resnext50_32x4d(pretrained=True)
+        #self.conv = models.resnext50_32x4d(pretrained=True)
         #self.conv = models.resnet18(pretrained=True)
-        nr_fc_in = self.conv.fc.in_features + 16
-
-
-        self.conv = nn.Sequential(*list(self.conv.children())[:-1]) # removes the last layer
-        self.fcblock = FCBlock(nr_fc_in, dropout_rate)
-
+        #nr_fc_in = self.conv.fc.in_features + 16
+        #self.conv = nn.Sequential(*list(self.conv.children())[:-1]) # removes the last layer
         #self.resnet.fc = torch.nn.Linear(num_ftrs, 1)
+        #self.fcblock = FCBlock(nr_fc_in, dropout_rate)
+
+        self.conv = models.mobilenet_v2(pretrained=True, progress=True)
+        #self.conv.classifier = nn.Sequential(
+        #                    nn.Linear(1280, 512),
+        #                    nn.ReLU(),
+        #                    nn.Linear(512, 1))
+        nr_to_fc = self.conv.classifier[1].in_features
+        self.conv.classifier = nn.Identity()
+        self.fcblock = FCBlock(nr_to_fc+16, dropout_rate)
+
+
 
     def forward(self, x, context):
         x = self.conv(x)
