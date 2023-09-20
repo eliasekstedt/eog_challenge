@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}_'
-    tag = tag + 'w_balanced_sets'
+    tag = tag + 'w_balanced_sets_bn'
 
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
@@ -36,25 +36,23 @@ def main():
             'dropout_rate': 0.0,
             'usize': 128,
             'penalty': 1,
-            'method': None,
+            'method': ['hflip', 'rcrop'],
             'crop_ratio': 0.5,
             'crop_freq': 0.5}
     
-    methods = [['hflip'], ['hflip', 'vflip'], ['hflip', 'rcrop']]
-    for method in methods:
-        hparam['method'] = method
-        for i in range(1):
-            from Workflow.Flow import Workflow
-            workflow = Workflow(path=path, hparam=hparam, tag=tag)
-            workflow.load_data()
-            workflow.initiate_run()
-            #tic = time.perf_counter()
-            workflow.learn_parameters()
-            #toc = time.perf_counter()
-            workflow.evaluate()
-            #cm = workflow.evaluator.cmatrix
-            #with open('eval_test.txt', 'a') as file:
-            #    file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
+    
+    for i in range(1):
+        from Workflow.Flow import Workflow
+        workflow = Workflow(path=path, hparam=hparam, tag=tag)
+        workflow.load_data()
+        workflow.initiate_run()
+        #tic = time.perf_counter()
+        workflow.learn_parameters()
+        #toc = time.perf_counter()
+        workflow.evaluate()
+        #cm = workflow.evaluator.cmatrix
+        #with open('eval_test.txt', 'a') as file:
+        #    file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
 
 
 
@@ -65,8 +63,11 @@ to do:
 
 *run as below but with resnext as convolutional block
 *run same as below with one bn level in the FC block
-*run the same as before with new balanced datasets
     -result:
+*run the same as before with new balanced datasets
+    -result: [hflip, rcrop], unlike the others never got to the point of overfitting.
+    also slightly lower min than the others. the augmentations i will go with for now.
+    dont know why i did not get that result as clearly before.
 
 
 """

@@ -32,7 +32,7 @@ class FCBlock(nn.Module):
     def __init__(self, nr_fc_in, dropout_rate):
         super(FCBlock, self).__init__()
         self.block = nn.Sequential(
-            #nn.BatchNorm1d(nr_fc_in),
+            nn.BatchNorm1d(nr_fc_in),
             nn.Linear(nr_fc_in, 256),
             nn.ReLU(),
             #nn.BatchNorm1d(256),
