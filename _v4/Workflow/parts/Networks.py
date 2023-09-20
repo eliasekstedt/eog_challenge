@@ -26,7 +26,7 @@ if see:
 
 
 class Net(nn.Module):
-    def __init__(self, weight_decay, dropout_rate, penalty, mode):
+    def __init__(self, weight_decay, dropout_rates, penalty, mode):
         super(Net, self).__init__()
         self.criterion = CustomLoss(penalty=penalty)
         self.s_criterion = RMSELoss()
@@ -35,7 +35,7 @@ class Net(nn.Module):
         self.record_performance = []
         self.current_best = None
         # architecture
-        self.architecture = Architecture(dropout_rate, mode)
+        self.architecture = Architecture(dropout_rates, mode)
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
 
     def forward(self, x, context):

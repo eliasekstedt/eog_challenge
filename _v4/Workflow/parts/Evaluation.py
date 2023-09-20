@@ -13,6 +13,7 @@ class Evaluator:
     def __init__(self, runpath, model, loader, foldpath, device):
         preddata = self.evaluate(model, loader, device)
         evaldata = self.assemble_evaldata(foldpath, preddata)
+        self.score = evaldata['error'].mean()
         evaldata.to_csv(f'{runpath}evaldata.csv', index=False)
         #self.cmatrix = self.get_cmatrix(evaldata)
         #self.plot_cmatrix(runpath)

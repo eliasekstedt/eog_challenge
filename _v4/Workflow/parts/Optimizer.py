@@ -19,7 +19,7 @@ class Optimizer:
 
     def objective(self, param):
         def make_line():
-            message = f'{accuracy}'
+            message = f'{score}'
             for p in param:
                 message = message + f'\t{p}'
             message = message + f'\t{toc-tic}'
@@ -30,7 +30,6 @@ class Optimizer:
         runtag = f'opt_{str(datetime.now())[8:10]}'
         for key in self.hparam.keys():
             runtag += f'_{self.hparam[key]}'
-        #runtag = f'WF1_{str(datetime.now())[8:10]}_opt_{self.setup["tag"]}'
         from Workflow.Flow import Workflow
         workflow = Workflow(path=self.path, hparam=self.hparam, tag=runtag)
         workflow.load_data()
@@ -39,11 +38,10 @@ class Optimizer:
         workflow.learn_parameters()
         toc = time.perf_counter()
         workflow.evaluate()
-        cm = workflow.evaluator.cmatrix
-        accuracy = (cm[0,0] + cm[1,1])/cm.sum()
+        score = workflow.evaluator.score
         file_it(self.logfilepath, make_line())
         self.log_along()
-        return 1-accuracy
+        return score
 
     def optimize(self):
         def create_header():

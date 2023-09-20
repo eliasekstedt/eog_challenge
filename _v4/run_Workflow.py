@@ -36,7 +36,7 @@ def main():
             'dropout_rate': 0.0,
             'usize': 128,
             'penalty': 1,
-            'mode': 'res34',
+            'mode': 'mobv2',
             'method': ['hflip', 'rcrop'],
             'crop_ratio': 0.5,
             'crop_freq': 0.5}
@@ -67,8 +67,10 @@ def main():
 to do:
 *implement mixed precision
 
-*run as below but with resnext as convolutional block
+*optimize dropout with weight decay, then dropout detailed
     -result:
+*run as below but with resnext as convolutional block
+    -result: bout the same
 *without damage
     -result: worse; did not converge as quickly and probably not as far had i 
     let it go all the way.
