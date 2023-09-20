@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}_'
-    tag = tag + 'w_balanced_sets_bn'
+    tag = tag + 'short_wide_fc'
 
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
@@ -62,8 +62,9 @@ to do:
 *implement mixed precision
 
 *run as below but with resnext as convolutional block
+*same as before but shorter and wider fc component
 *run same as below with one bn level in the FC block
-    -result:
+    -result: bout the same
 *run the same as before with new balanced datasets
     -result: [hflip, rcrop], unlike the others never got to the point of overfitting.
     also slightly lower min than the others. the augmentations i will go with for now.
