@@ -27,7 +27,7 @@ class Optimizer:
 
         for i, key in enumerate(self.setup['key_for_opt']):
             self.hparam[key] = param[i]
-        runtag = f'opt_{str(datetime.now())[8:10]}'
+        runtag = f'nightopt_{str(datetime.now())[8:10]}'
         for key in self.hparam.keys():
             runtag += f'_{self.hparam[key]}'
         from Workflow.Flow import Workflow
