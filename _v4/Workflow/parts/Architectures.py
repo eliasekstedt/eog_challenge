@@ -14,11 +14,11 @@ class Architecture(nn.Module):
         warnings.filterwarnings("ignore", category=UserWarning)
         #self.conv = models.resnext50_32x4d(pretrained=True)
         self.conv = models.resnet18(pretrained=True)
-        num_ftrs = self.conv.fc.in_features + 16
+        nr_fc_in = self.conv.fc.in_features + 8
 
 
         self.conv = nn.Sequential(*list(self.conv.children())[:-1]) # removes the last layer
-        self.fcblock = FCBlock(num_ftrs, dropout_rate)
+        self.fcblock = FCBlock(nr_fc_in, dropout_rate)
 
         #self.resnet.fc = torch.nn.Linear(num_ftrs, 1)
 
@@ -33,14 +33,14 @@ class FCBlock(nn.Module):
         super(FCBlock, self).__init__()
         self.block = nn.Sequential(
             #nn.BatchNorm1d(nr_fc_in),
-            nn.Linear(nr_fc_in, nr_fc_in),
+            nn.Linear(nr_fc_in, 256),
             nn.ReLU(),
             #nn.BatchNorm1d(256),
-            #nn.Linear(256, 128),
-            #nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
             #nn.BatchNorm1d(128),
             nn.Dropout(dropout_rate),
-            nn.Linear(nr_fc_in, 1)
+            nn.Linear(128, 1)
         )
     
     def forward(self, x):

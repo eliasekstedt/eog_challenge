@@ -21,7 +21,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
     tag = f'WF1_{str(datetime.now())[8:10]}_'
-    tag = tag + 'short_wide_fc'
+    tag = tag + 'no_damage'
 
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
@@ -62,7 +62,11 @@ to do:
 *implement mixed precision
 
 *run as below but with resnext as convolutional block
+
+*without damage
+    -result:
 *same as before but shorter and wider fc component
+    -result: slightly worse
 *run same as below with one bn level in the FC block
     -result: bout the same
 *run the same as before with new balanced datasets

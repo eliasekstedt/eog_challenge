@@ -27,7 +27,7 @@ class Reader(Dataset):
         self.crop_ratio = crop_ratio
         self.crop_freq = crop_freq
         self.usize = usize
-        self.set = pd.read_csv(path_csv)
+        self.set = pd.read_csv(path_csv).filter(regex='^(?!damage_)', axis=1)
         self.path_im = path_im
         self.eval = eval
         #self.blocker = Fblocker()
@@ -43,11 +43,6 @@ class Reader(Dataset):
         row = self.set.iloc[idx]
         filename = row['filename']
         context = torch.tensor(self.set.iloc[idx, 3:].tolist(), dtype=torch.float32)
-        #context = row[self.set.columns[3:]]
-        #print(context)
-        #print(len(context))
-        #1/0
-
         image = read_image(f'{self.path_im}{filename}')/255
         image = image.type(torch.float32)
         #title = f'{row["extent"]}| {row["growth_stage_F"]}, {row["growth_stage_M"]}, {row["growth_stage_S"]}, {row["growth_stage_V"]}'
