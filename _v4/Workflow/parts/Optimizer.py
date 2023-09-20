@@ -27,8 +27,11 @@ class Optimizer:
 
         for i, key in enumerate(self.setup['key_for_opt']):
             self.hparam[key] = param[i]
-        runtag = f'WF1_{str(datetime.now())[8:10]}_opt_{self.setup["tag"]}'
-        from WF1_classifier.Flow import Workflow
+        runtag = f'opt_{str(datetime.now())[8:10]}'
+        for key in self.hparam.keys():
+            runtag += f'_{self.hparam[key]}'
+        #runtag = f'WF1_{str(datetime.now())[8:10]}_opt_{self.setup["tag"]}'
+        from Workflow.Flow import Workflow
         workflow = Workflow(path=self.path, hparam=self.hparam, tag=runtag)
         workflow.load_data()
         workflow.initiate_run()
@@ -60,7 +63,7 @@ class Optimizer:
         df = pd.read_csv(self.logfilepath, sep='\t')
         df.sort_values('accuracy', inplace=True)
         if len(self.setup['bounds']) == 1:
-            from WF1_classifier.parts.Tools import gp_plot
+            from Workflow.parts.Tools import gp_plot
             gp_plot(df, self.setup['bound'], self.logpath)
         print(f'call: {len(df)}/{self.setup["n_calls"]}')
         self.rank = df

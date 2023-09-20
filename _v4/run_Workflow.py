@@ -14,13 +14,13 @@ np.random.seed(0)
 import torch
 torch.manual_seed(0)
 
-#torch.backends.cudnn.deterministic = True
-#torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
-    tag = f'WF_{str(datetime.now())[8:10]}'
+    tag = f'wf_{str(datetime.now())[8:10]}'
     #tag = tag + ''
 
     path = {'set_0':'Workflow/csv/set_0.csv',

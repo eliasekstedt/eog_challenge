@@ -16,7 +16,10 @@ torch.backends.cudnn.benchmark = False
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
-
+# ################################################################# #
+# before real optimization, decide the best early stopping protocol #
+# ################################################################# #
+# this would involve a validation set and two different evaluators
 def main():
     path = {'set_0':'Workflow/csv/set_0.csv',
             'set_1':'Workflow/csv/set_1.csv',
@@ -25,29 +28,31 @@ def main():
             'unlabeled':'../data/test/'
             }
 
-    setup = {'tag':'wd_v_dor_dlia3_arch',                                          #
-             'key_for_opt': ['weight_decay', 'dropout_rate'],                #
-             'bounds': [(0.0, 1e-4), (0.0, 0.50)],                      #
-             'n_calls': 25}
+    setup = {'tag': '',                                          #
+             'key_for_opt': ['weight_decay', 'dropout_rate0', 'dropout_rate1', 'dropout_rate2'],                #
+             'bounds': [(0.0, 1e-4), (0.0, 0.5), (0.0, 0.5), (0.0, 0.5)],                      #
+             'n_calls': 2}
     
     hparam = {'batch_size': 64,
-            'nr_epochs': 32,
-            'weight_decay': None, #9.428542092781991e-05,
-            'dropout_rate': None, #0.0
+            'nr_epochs': 2,
+            'weight_decay': None,
+            'dropout_rate0': None,
+            'dropout_rate1': None,
+            'dropout_rate2': None,
             'usize': 128,
             'penalty': 1,
-            'method': ['hflip', 'vflip'],
-            'crop_ratio': None,                                          #
-            'crop_freq': None}                                           #
+            'mode': 'res34',
+            'method': ['hflip', 'rcrop'],
+            'crop_ratio': 0.5,                                          #
+            'crop_freq': 0.5}                                           #
     
-
 
     gp_init_time = datetime.now()
     logpath = f'gp_logs/{setup["tag"]}_{str(gp_init_time)[8:10]}_{str(gp_init_time)[11:13]}_{str(gp_init_time)[14:16]}_{str(gp_init_time)[17:19]}/'
     if not os.path.isdir(logpath):
         os.makedirs(logpath)
     
-    from WF1_classifier.parts.Optimizer import Optimizer
+    from Workflow.parts.Optimizer import Optimizer
     opt = Optimizer(logpath, setup, path, hparam)
     opt.optimize()
 

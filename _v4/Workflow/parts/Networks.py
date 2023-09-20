@@ -33,6 +33,7 @@ class Net(nn.Module):
         self.traincost, self.testcost = [], []
         self.s_traincost, self.s_testcost = [], []
         self.record_performance = []
+        self.current_best = None
         # architecture
         self.architecture = Architecture(dropout_rate, mode)
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
@@ -91,11 +92,15 @@ class Net(nn.Module):
 
     def log_epoch(self, header, runpath, nr_epochs):
         epoch_info = f'{len(self.testcost)}/{nr_epochs}\t\t{round(self.traincost[-1], 4)}/{round(self.s_traincost[-1], 4)}\t\t{round(self.testcost[-1], 4)}/{round(self.s_testcost[-1], 4)}\t\t{str(datetime.now())[11:19]}'
-        # save model if current best
+        # early stopping protocols
+        if self.current_best is None or self.current_best >= self.testcost[-1]:
+            self.current_best = self.testcost[-1]
+            torch.save(self.state_dict(), f'{runpath}sp1_model.pth')
+            epoch_info = epoch_info + f'\t*sp1*'
         if len(self.record_performance) == 0 or max(self.traincost[-1], self.testcost[-1]) <= min(self.record_performance):
-            self.record_performance.append(min(self.traincost[-1], self.testcost[-1]))
-            torch.save(self.state_dict(), f'{runpath}model.pth')
-            epoch_info = epoch_info + f'\t*save*'
+            self.record_performance.append(max(self.traincost[-1], self.testcost[-1]))
+            torch.save(self.state_dict(), f'{runpath}sp2_model.pth')
+            epoch_info = epoch_info + f'\t*sp2*'
         # print and log current epoch info
         print(epoch_info)
         with open(runpath + 'log.txt', 'a') as file:
