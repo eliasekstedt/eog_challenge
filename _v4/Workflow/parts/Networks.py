@@ -26,18 +26,15 @@ if see:
 
 
 class Net(nn.Module):
-    def __init__(self, weight_decay, dropout_rate, penalty):
+    def __init__(self, weight_decay, dropout_rate, penalty, mode):
         super(Net, self).__init__()
         self.criterion = CustomLoss(penalty=penalty)
         self.s_criterion = RMSELoss()
-        #self.criterion = torch.nn.BCEWithLogitsLoss() # eog_version
-        #self.criterion = nn.CrossEntropyLoss() # dlia 3 unet-like version
         self.traincost, self.testcost = [], []
         self.s_traincost, self.s_testcost = [], []
         self.record_performance = []
         # architecture
-        self.architecture = Architecture(dropout_rate) # dlia3 version
-        #self.architecture = Architecture() # eog_version
+        self.architecture = Architecture(dropout_rate, mode)
         self.optimizer = torch.optim.Adam(self.parameters(), weight_decay=weight_decay)
 
     def forward(self, x, context):

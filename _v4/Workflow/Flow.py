@@ -39,7 +39,7 @@ class Workflow:
         self.runpath = run_init(hparams=self.hparam, tag=self.tag, device=self.device)
 
     def learn_parameters(self):
-        self.model = Net(self.hparam['weight_decay'], self.hparam['dropout_rate'], self.hparam['penalty']).to(self.device)
+        self.model = Net(self.hparam['weight_decay'], self.hparam['dropout_rate'], self.hparam['penalty'], self.hparam['mode']).to(self.device)
         self.model.train_model(self.loader_0, self.loader_1, self.hparam['nr_epochs'], self.runpath, self.device)
 
     def evaluate(self):
@@ -47,10 +47,6 @@ class Workflow:
         plot_performance(self.model, self.runpath)
         self.model.load_state_dict(torch.load(f'{self.runpath}model.pth'))
         self.evaluator = Evaluator(self.runpath, self.model, self.evalloader, self.path['set_1'], self.device)
-        #try:
-        #    plot_by_ctx_feature(self.runpath)
-        #except ValueError:
-        #    print("no barplot made")
         heatmap = Heatmap(self.runpath, height=220, vlines=True)
         heatmap.save(self.runpath)
 
