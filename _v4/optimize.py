@@ -29,17 +29,17 @@ def main():
             }
 
     setup = {'tag': '',                                          #
-             'key_for_opt': ['weight_decay', 'dropout_rate'],                #
-             'bounds': [(0.0, 1e-4), (0.0, 0.5)],                      #
-             'n_calls': 8}
+             'key_for_opt': ['weight_decay'],                #
+             'bounds': [(0.0, 1e-5)],                      #
+             'n_calls': 2} # 30
     
     hparam = {'batch_size': 64,
-            'nr_epochs': 25,
+            'nr_epochs': 2, #25
             'weight_decay': None,
-            'dropout_rate': None,
+            'dropout_rate': 0.1,
             'usize': 128,
             'penalty': 1,
-            'mode': 'mobv2',
+            'mode': 'res34',
             'method': ['hflip', 'rcrop'],
             'crop_ratio': 0.5,                                          #
             'crop_freq': 0.5}                                           #

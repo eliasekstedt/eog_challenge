@@ -19,7 +19,7 @@ class Optimizer:
 
     def objective(self, param):
         def make_line():
-            message = f'{score}'
+            message = f'{clipped_score}/{unclipped_score}'
             for p in param:
                 message = message + f'\t{p}'
             message = message + f'\t{toc-tic}'
@@ -27,7 +27,7 @@ class Optimizer:
 
         for i, key in enumerate(self.setup['key_for_opt']):
             self.hparam[key] = param[i]
-        runtag = f'nightopt_{str(datetime.now())[8:10]}'
+        runtag = f'opt{str(datetime.now())[8:10]}'
         for key in self.hparam.keys():
             runtag += f'_{self.hparam[key]}'
         from Workflow.Flow import Workflow
@@ -38,14 +38,15 @@ class Optimizer:
         workflow.learn_parameters()
         toc = time.perf_counter()
         workflow.evaluate()
-        score = workflow.evaluator.score
+        clipped_score = workflow.evaluator.clipped_score
+        unclipped_score = workflow.evaluator.unclipped_score
         file_it(self.logfilepath, make_line())
         self.log_along()
-        return score
+        return unclipped_score
 
     def optimize(self):
         def create_header():
-            header = f'accuracy'
+            header = f'clipped/unclipped'
             for i, key in enumerate(self.setup['key_for_opt']):
                 header = header + f'\t{key}'
             return header + '\ttime'
@@ -56,10 +57,11 @@ class Optimizer:
         result = gp_minimize(self.objective, space, n_calls=self.setup['n_calls'], acq_func='EI', n_random_starts=min(5, self.setup['n_calls']))
         best_param = result.x[0]
         print(f'best param: {best_param}')
+        print(f'all?\n{result.x}')
     
     def log_along(self):
         df = pd.read_csv(self.logfilepath, sep='\t')
-        df.sort_values('accuracy', inplace=True)
+        df.sort_values('clipped/unclipped', inplace=True)
         if len(self.setup['bounds']) == 1:
             from Workflow.parts.Tools import gp_plot
             gp_plot(df, self.setup['bound'], self.logpath)

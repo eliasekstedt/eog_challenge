@@ -36,7 +36,7 @@ def main():
             'dropout_rate': 0.0,
             'usize': 128,
             'penalty': 1,
-            'mode': 'mobv2',
+            'mode': 'res34',
             'method': ['hflip', 'rcrop'],
             'crop_ratio': 0.5,
             'crop_freq': 0.5}
@@ -68,7 +68,9 @@ to do:
 *implement mixed precision
 
 *optimize dropout with weight decay, then dropout detailed
-    -result:
+    -result: weight decay seems too high at ~1e-4. clear underfitting always.
+    allow a degree of overfitting and let other regularization techniques do
+    their part.
 *run as below but with resnext as convolutional block
     -result: bout the same
 *without damage

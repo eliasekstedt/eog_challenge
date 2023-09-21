@@ -13,7 +13,8 @@ class Evaluator:
     def __init__(self, runpath, model, loader, foldpath, device):
         preddata = self.evaluate(model, loader, device)
         evaldata = self.assemble_evaldata(foldpath, preddata)
-        self.score = evaldata['error'].mean()
+        self.unclipped_score = evaldata['unclipped_error'].mean()
+        self.clipped_score = evaldata['error'].mean()
         evaldata.to_csv(f'{runpath}evaldata.csv', index=False)
         #self.cmatrix = self.get_cmatrix(evaldata)
         #self.plot_cmatrix(runpath)
@@ -32,13 +33,14 @@ class Evaluator:
                 else:
                     preds = preds + batch_outputs
                     ids = ids + batch_ids
-            df = pd.DataFrame({'ID':ids, 'pred':preds})
-            df['pred'] = df['pred'].clip(lower=0, upper=100)
+            df = pd.DataFrame({'ID':ids, 'unclipped_pred':preds})
+            df['pred'] = df['unclipped_pred'].clip(lower=0, upper=100)
             return df
 
     def assemble_evaldata(self, foldpath, preddata):
         folddata = pd.read_csv(foldpath)
         evaldata = preddata.merge(folddata, on='ID', how='inner')
+        evaldata['unclipped_error'] = np.abs(evaldata['extent'] - evaldata['unclipped_pred'])
         evaldata['error'] = np.abs(evaldata['extent'] - evaldata['pred'])
         evaldata = evaldata[['ID', 'filename', 'extent', 'pred', 'error']+list(evaldata.columns[4:-1])]
         return evaldata
