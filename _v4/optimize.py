@@ -31,7 +31,7 @@ def main():
     setup = {'tag': '',                                          #
              'key_for_opt': ['weight_decay', 'dropout_rate'],                #
              'bounds': [(0.0, 1e-4), (0.0, 0.5)],                      #
-             'n_calls': 25}
+             'n_calls': 8}
     
     hparam = {'batch_size': 64,
             'nr_epochs': 25,
