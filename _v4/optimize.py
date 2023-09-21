@@ -31,10 +31,10 @@ def main():
     setup = {'tag': '',                                          #
              'key_for_opt': ['weight_decay'],                #
              'bounds': [(0.0, 1e-5)],                      #
-             'n_calls': 2} # 30
+             'n_calls': 30} # 30
     
     hparam = {'batch_size': 64,
-            'nr_epochs': 2, #25
+            'nr_epochs': 25, #25
             'weight_decay': None,
             'dropout_rate': 0.1,
             'usize': 128,
@@ -43,7 +43,6 @@ def main():
             'method': ['hflip', 'rcrop'],
             'crop_ratio': 0.5,                                          #
             'crop_freq': 0.5}                                           #
-    
 
     gp_init_time = datetime.now()
     logpath = f'gp_logs/{setup["tag"]}_{str(gp_init_time)[8:10]}_{str(gp_init_time)[11:13]}_{str(gp_init_time)[14:16]}_{str(gp_init_time)[17:19]}/'

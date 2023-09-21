@@ -160,9 +160,11 @@ def scatter_matrix(df, metric):
     plt.close('all')
     #plt.show()
 
-def gp_plot(df, xlim, logpath):
-    x = np.array(df['param'].to_list())
-    y = np.array([[yy] for yy in df['accuracy']])
+def gp_plot(df, setup, logpath):
+    xlim = setup['bounds']
+    param = setup['key_for_opt'][0]
+    x = np.array(df[param].to_list())
+    y = np.array([[yy] for yy in df['unclipped']])
     plt.plot(x, y, 'o', color='black')
     plt.plot(x[-1], y[-1], 'o', color='blue')
     plt.xlim(xlim)

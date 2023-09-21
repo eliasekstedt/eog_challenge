@@ -32,7 +32,7 @@ def main():
 
     hparam = {'batch_size': 64,
             'nr_epochs': 18,
-            'weight_decay': 9.43e-5,#9.428542092781991e-05,
+            'weight_decay': 0,#9.428542092781991e-05,
             'dropout_rate': 0.0,
             'usize': 128,
             'penalty': 1,

@@ -63,7 +63,8 @@ class Optimizer:
         df = pd.read_csv(self.logfilepath, sep='\t')
         df.sort_values('clipped/unclipped', inplace=True)
         if len(self.setup['bounds']) == 1:
-            from Workflow.parts.Tools import gp_plot
-            gp_plot(df, self.setup['bound'], self.logpath)
+            pass
+            #from Workflow.parts.Tools import gp_plot
+            #gp_plot(df, self.setup, self.logpath)
         print(f'call: {len(df)}/{self.setup["n_calls"]}')
         self.rank = df
