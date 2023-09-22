@@ -31,7 +31,7 @@ def main():
             }
 
     hparam = {'batch_size': 64,
-            'nr_epochs': 18,
+            'nr_epochs': 25,
             'weight_decay': 0,#9.428542092781991e-05,
             'dropout_rate': 0.0,
             'usize': 128,
@@ -66,6 +66,9 @@ def main():
 """
 to do:
 *implement mixed precision
+* run with and without bn, no weight decay, no dropout. both res34 and mobv2. hoping
+to see a degree of overfitting, then slowly improve from there.
+    -result:
 
 *optimize dropout with weight decay, then dropout detailed
     -result: weight decay seems too high at ~1e-4. clear underfitting always.
