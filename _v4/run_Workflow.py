@@ -30,10 +30,10 @@ def main():
             'unlabeled':'../data/test/'
             }
 
-    hparam = {'fcv': None,
+    hparam = {'fcv': 'no_fc',
             'mode': None,
             'batch_size': 64,
-            'nr_epochs': 35,
+            'nr_epochs': 40,
             'weight_decay': 0,#9.428542092781991e-05,
             'dropout_rate': 0.0,
             'usize': 128,
@@ -47,18 +47,16 @@ def main():
 
 
     
-    modes = ['res34']
-    fc_versions = ['wo3', 'bn3', 'wo2', 'bn2', 'wo1', 'bn1']
+    modes = ['mobv2', 'res18', 'res34']
     for mode in modes:
-        for fcv in fc_versions:
-            hparam['fcv'], hparam['mode'] = fcv, mode
-            tag = f'cvg_{fcv}_{mode}'
-            from Workflow.Flow import Workflow
-            workflow = Workflow(path=path, hparam=hparam, tag=tag)
-            workflow.load_data()
-            workflow.initiate_run()
-            workflow.learn_parameters()
-            workflow.evaluate()
+        hparam['mode'] = mode
+        tag = f"test_convcompare_{hparam['fcv']}_{mode}"
+        from Workflow.Flow import Workflow
+        workflow = Workflow(path=path, hparam=hparam, tag=tag)
+        workflow.load_data()
+        workflow.initiate_run()
+        workflow.learn_parameters()
+        workflow.evaluate()
 
 
 

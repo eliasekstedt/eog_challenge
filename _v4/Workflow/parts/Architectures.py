@@ -25,7 +25,7 @@ class Architecture(nn.Module):
             nr_to_fc = self.conv.classifier[1].in_features
             self.conv.classifier = nn.Identity()
         
-        nr_to_fc += 16
+        #nr_to_fc += 16
         if fc_version == 'wo1':
             print(f'fcv: {fc_version}')
             self.fcblock = FCBlock_wo1(nr_to_fc)
@@ -43,12 +43,16 @@ class Architecture(nn.Module):
             self.fcblock = FCBlock_wo3(nr_to_fc)
         elif fc_version == 'bn3':
             print(f'fcv: {fc_version}')
-            self.fcblock = FCBlock_bn3(nr_to_fc)    
+            self.fcblock = FCBlock_bn3(nr_to_fc)
+        elif fc_version == 'no_fc':
+            print(f'fcv: {fc_version}')
+            self.fcblock = torch.nn.Linear(nr_to_fc, 1)
 
     def forward(self, x, context):
         x = self.conv(x)
         x = x.view(x.size(0), -1)
-        x = self.fcblock(torch.cat((x, context), dim=1))
+        #x = self.fcblock(torch.cat((x, context), dim=1))
+        x = self.fcblock(x)
         return x
     
 class FCBlock(nn.Module):
