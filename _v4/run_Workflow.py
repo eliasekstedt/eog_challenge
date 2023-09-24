@@ -20,7 +20,7 @@ torch.backends.cudnn.benchmark = False
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 def main():
-    tag = f'wf_{str(datetime.now())[8:10]}'
+    #tag = f'test_cvg'#{str(datetime.now())[8:10]}'
     #tag = tag + ''
 
     path = {'set_0':'Workflow/csv/set_0.csv',
@@ -30,35 +30,35 @@ def main():
             'unlabeled':'../data/test/'
             }
 
-    hparam = {'batch_size': 64,
-            'nr_epochs': 25,
+    hparam = {'fcv': None,
+            'mode': None,
+            'batch_size': 64,
+            'nr_epochs': 35,
             'weight_decay': 0,#9.428542092781991e-05,
             'dropout_rate': 0.0,
             'usize': 128,
             'penalty': 1,
-            'mode': 'res34',
             'method': ['hflip', 'rcrop'],
             'crop_ratio': 0.5,
             'crop_freq': 0.5}
     
-    for key in hparam.keys():
-        tag += f'_{hparam[key]}'
+    #for key in hparam.keys():
+    #    tag += f'_{hparam[key]}'
 
 
     
-    
-    for i in range(1):
-        from Workflow.Flow import Workflow
-        workflow = Workflow(path=path, hparam=hparam, tag=tag)
-        workflow.load_data()
-        workflow.initiate_run()
-        #tic = time.perf_counter()
-        workflow.learn_parameters()
-        #toc = time.perf_counter()
-        workflow.evaluate()
-        #cm = workflow.evaluator.cmatrix
-        #with open('eval_test.txt', 'a') as file:
-        #    file.write(f'{(cm[0,0] + cm[1,1])/cm.sum()}\t{cm[0,0]}\t{cm[0,1]}\t{cm[1,0]}\t{cm[1,1]}\t{round(toc-tic, 4)}\n')
+    modes = ['res34']
+    fc_versions = ['wo3', 'bn3', 'wo2', 'bn2', 'wo1', 'bn1']
+    for mode in modes:
+        for fcv in fc_versions:
+            hparam['fcv'], hparam['mode'] = fcv, mode
+            tag = f'cvg_{fcv}_{mode}'
+            from Workflow.Flow import Workflow
+            workflow = Workflow(path=path, hparam=hparam, tag=tag)
+            workflow.load_data()
+            workflow.initiate_run()
+            workflow.learn_parameters()
+            workflow.evaluate()
 
 
 
