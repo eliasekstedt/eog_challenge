@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import warnings
 
 class Architecture(nn.Module):
-    def __init__(self, dropout_rates, mode, fc_version):
+    def __init__(self, dropout_rate, mode, fc_version):
         super(Architecture, self).__init__()
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         warnings.filterwarnings("ignore", category=UserWarning)
@@ -46,7 +46,10 @@ class Architecture(nn.Module):
             self.fcblock = FCBlock_bn3(nr_to_fc)
         elif fc_version == 'no_fc':
             print(f'fcv: {fc_version}')
-            self.fcblock = torch.nn.Linear(nr_to_fc, 1)
+            self.fcblock = nn.Sequential(
+                nn.Dropout(dropout_rate),
+                torch.nn.Linear(nr_to_fc, 1)
+            )
 
     def forward(self, x, context):
         x = self.conv(x)

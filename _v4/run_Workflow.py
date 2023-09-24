@@ -33,12 +33,12 @@ def main():
     hparam = {'fcv': 'no_fc',
             'mode': None,
             'batch_size': 64,
-            'nr_epochs': 40,
-            'weight_decay': 0,#9.428542092781991e-05,
-            'dropout_rate': 0.0,
+            'nr_epochs': 18,
+            'weight_decay': 2e-6,#9.428542092781991e-05,
+            'dropout_rate': 0.2,
             'usize': 128,
             'penalty': 1,
-            'method': ['hflip', 'rcrop'],
+            'method': ['hflip'],
             'crop_ratio': 0.5,
             'crop_freq': 0.5}
     
@@ -47,10 +47,10 @@ def main():
 
 
     
-    modes = ['mobv2', 'res18', 'res34']
+    modes = ['mobv2']
     for mode in modes:
         hparam['mode'] = mode
-        tag = f"test_convcompare_{hparam['fcv']}_{mode}"
+        tag = f"mobvres_norc_{hparam['fcv']}_{mode}_{hparam['weight_decay']}"
         from Workflow.Flow import Workflow
         workflow = Workflow(path=path, hparam=hparam, tag=tag)
         workflow.load_data()

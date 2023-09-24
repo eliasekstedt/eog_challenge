@@ -16,7 +16,7 @@ class HotnCode:
     
     def balance_sub_select(self, df):
         extent_gtz = df.loc[df['extent'] > 0]
-        extent_z = df.loc[df['extent'] == 0].head(len(extent_gtz))
+        extent_z = df.loc[df['extent'] == 0].head(len(extent_gtz)//10)
         df = pd.concat([extent_gtz, extent_z], axis=0).sample(frac=1)
         return df
 

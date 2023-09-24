@@ -39,7 +39,7 @@ class Workflow:
         self.runpath = run_init(hparams=self.hparam, tag=self.tag, device=self.device)
 
     def learn_parameters(self):
-        self.model = Net(self.hparam['weight_decay'], [self.hparam['dropout_rate'],self.hparam['dropout_rate'],self.hparam['dropout_rate']], self.hparam['penalty'], self.hparam['mode'], self.hparam['fcv']).to(self.device)
+        self.model = Net(self.hparam['weight_decay'], self.hparam['dropout_rate'], self.hparam['penalty'], self.hparam['mode'], self.hparam['fcv']).to(self.device)
         self.model.train_model(self.loader_0, self.loader_1, self.hparam['nr_epochs'], self.runpath, self.device)
 
     def evaluate(self):
