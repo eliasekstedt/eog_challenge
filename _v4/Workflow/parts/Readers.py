@@ -45,8 +45,8 @@ class Reader(Dataset):
         context = torch.tensor(self.set.iloc[idx, 3:].tolist(), dtype=torch.float32)
         image = read_image(f'{self.path_im}{filename}')/255
         image = image.type(torch.float32)
-        title = f'{row["damage_DR"]} {row["extent"]}| {row["growth_stage_F"]}, {row["growth_stage_M"]}, {row["growth_stage_S"]}, {row["growth_stage_V"]}'
-        show(image, title=title)
+        #title = f'{row["damage_DR"]} {row["extent"]}| {row["growth_stage_F"]}, {row["growth_stage_M"]}, {row["growth_stage_S"]}, {row["growth_stage_V"]}'
+        #show(image, title=title)
         image = self.augment(image)
         if self.eval:
             id = row['ID']

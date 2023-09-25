@@ -13,10 +13,8 @@ class Evaluator:
     def __init__(self, runpath, model, loader, foldpath, device):
         preddata = self.evaluate(model, loader, device)
         evaldata = self.assemble_evaldata(foldpath, preddata)
-        self.unclipped_score = evaldata['unclipped_error'].mean()
-        self.clipped_score = evaldata['clipped_error'].mean()
+        self.score = evaldata['error'].mean()
         evaldata.to_csv(f'{runpath}evaldata.csv', index=False)
-
 
     def evaluate(self, model, loader, device):
         model.eval()
@@ -32,18 +30,18 @@ class Evaluator:
                 else:
                     preds = preds + batch_outputs
                     ids = ids + batch_ids
-            df = pd.DataFrame({'ID':ids, 'unclipped_pred':preds})
-            df['clipped_pred'] = df['unclipped_pred'].clip(lower=0, upper=100)
+            df = pd.DataFrame({'ID':ids, 'pred':preds})
+            df['pred_hm'] = df['pred'].clip(lower=0, upper=100)
             return df
 
     def assemble_evaldata(self, foldpath, preddata):
         folddata = pd.read_csv(foldpath)
         evaldata = preddata.merge(folddata, on='ID', how='inner')
-        evaldata['unclipped_error'] = np.abs(evaldata['extent'] - evaldata['unclipped_pred'])
-        evaldata['clipped_error'] = np.abs(evaldata['extent'] - evaldata['clipped_pred'])
-        evaldata = evaldata[['ID', 'filename', 'extent', 'unclipped_pred', 'clipped_pred', 'unclipped_error', 'clipped_error']+list(evaldata.columns[7:-2])]
+        evaldata['error'] = np.abs(evaldata['extent'] - evaldata['pred'])
+        print(evaldata)
+        evaldata = evaldata[['ID', 'filename', 'extent', 'pred', 'error'] + list(evaldata.columns[5:-1]) + ['pred_hm']]
+        print(evaldata)
         return evaldata
-    
     
     def plot_cmatrix(self, runpath):
         sns.heatmap(self.cmatrix, annot=True, fmt='g', cmap='Blues')
@@ -53,7 +51,6 @@ class Evaluator:
         plt.figure()
         plt.close('all')
     
-
 
 
 class Heatmap:
@@ -88,7 +85,7 @@ class Heatmap:
 
     def get_heatmap_row(self, extent_level):
         def get_pred_dist_by_extent(extent_level):
-            on_extent_level = self.data.loc[self.data['extent'] == extent_level].value_counts('clipped_pred')
+            on_extent_level = self.data.loc[self.data['extent'] == extent_level].value_counts('pred_hm')
             pred_levels = [int(i) for i in on_extent_level.index]
             counts_by_pred_level = [float(i) for i in on_extent_level.values]
             return pred_levels, counts_by_pred_level
@@ -103,8 +100,8 @@ class Heatmap:
 
     def get_data(self, runpath):
         data = pd.read_csv(runpath+'evaldata.csv')
-        data = data[['extent', 'clipped_pred']]
-        data['clipped_pred'] = data['clipped_pred'].round()
+        data = data[['extent', 'pred_hm']]
+        data['pred_hm'] = data['pred_hm'].round()
         return data
 
     def get_extent_levels(self):
@@ -121,29 +118,3 @@ class Heatmap:
         plt.close('all')
         plt.show()
 
-
-"""
-runpath = 'run/test/26_08_17_47/'
-hm = Heatmap(runpath, hlines=True, vlines=True)
-ul = hm.heatmap[0, :5, :5]
-ur = hm.heatmap[0, :5, 96:]
-ll = hm.heatmap[0, 215:, :5]
-lr = hm.heatmap[0, 215:, 96:]
-corners = torch.cat([torch.cat([ul, ur], dim=1), torch.cat([ll, lr], dim=1)], dim = 0).unsqueeze(0)
-corners.to(torch.int64)
-print(corners.shape)
-corners = torch.cat([corners]*3, dim=0)
-#print(corners[0, :,:])
-gshow(hm.heatmap)
-#gshow(corners)
-#for corner in [ul, ur, ll, lr]:
-#    print(corner.shape)
-
-#print(hm.heatmap[0, 19:21, 95:])
-#print(hm.heatmap[0, 19:21, :5])
-#print(hm.heatmap.shape)
-data = pd.DataFrame({'extent':[10*i for i in range(11)], 'pred':[100*(np.random.uniform(0, 1)>0.5) for _ in range(11)]})
-        for _ in range(5000):
-            new = pd.DataFrame({'extent':[10*i for i in range(11)], 'pred':[np.random.uniform(0, 1)*100 for _ in range(11)]})
-            data = pd.concat([data, new], axis=0)
-"""
