@@ -9,4 +9,5 @@ for mode in modes:
         print(mode, fcv)"""
 
 lst = [1, 2, 3, 4, 5]
-print(lst[len(lst)-3:])
+a = (min(lst) + lst[len(lst)-3:])/2
+print(a)

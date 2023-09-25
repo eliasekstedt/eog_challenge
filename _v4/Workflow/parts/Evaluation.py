@@ -9,7 +9,7 @@ import torch
 
 class AltEvaluator:
     def __init__(self, model):
-        self.score = (min(model.testcost) + model.testcost[len(model.testcost)-3:])/2
+        self.score = (min(model.testcost) + sum(model.testcost[len(model.testcost)-3:]))/2
 
 class Evaluator:
     def __init__(self, runpath, model, loader, foldpath, device):
@@ -118,3 +118,13 @@ class Heatmap:
         plt.close('all')
         plt.show()
 
+
+"""
+class Model:
+    def __init__(self):
+        self.testcost = [1, 2, 3, 4, 5]
+
+model = Model()
+evaluator = AltEvaluator(model)
+print(evaluator.score)
+"""

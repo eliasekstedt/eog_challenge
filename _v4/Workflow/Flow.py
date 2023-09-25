@@ -48,7 +48,7 @@ class Workflow:
         print('evaluating')
         plot_performance(self.model, self.runpath)
         ###
-        self.evaluator = AltEvaluator()
+        self.evaluator = AltEvaluator(self.model)
         ###
         #self.model.load_state_dict(torch.load(f'{self.runpath}sp2_model.pth'))
         #self.evaluator = Evaluator(self.runpath, self.model, self.evalloader, self.path['set_1'], self.device)
