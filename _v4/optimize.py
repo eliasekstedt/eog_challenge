@@ -31,12 +31,12 @@ def main():
     setup = {'tag': 'wd_dor',                                          #
              'key_for_opt': ['weight_decay', 'dropout_rate'],                #
              'bounds': [(0.0, 1e-5), (0.0, 0.5)],                      #
-             'n_calls': 10} # 30
+             'n_calls': 2} # 30
     
     hparam = {'fcv': 'no_fc',
             'mode': 'mobv2',
-            'batch_size': 96,
-            'nr_epochs': 9,
+            'batch_size': 64,
+            'nr_epochs': 2,
             'weight_decay': None,#9.428542092781991e-05,
             'dropout_rate': None,
             'usize': 128,

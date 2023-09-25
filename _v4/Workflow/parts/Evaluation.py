@@ -7,7 +7,9 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 import torch
 
-
+class AltEvaluator:
+    def __init__(self, model):
+        self.score = (min(model.testcost) + model.testcost[len(model.testcost)-3:])/2
 
 class Evaluator:
     def __init__(self, runpath, model, loader, foldpath, device):
@@ -38,9 +40,7 @@ class Evaluator:
         folddata = pd.read_csv(foldpath)
         evaldata = preddata.merge(folddata, on='ID', how='inner')
         evaldata['error'] = np.abs(evaldata['extent'] - evaldata['pred'])
-        print(evaldata)
         evaldata = evaldata[['ID', 'filename', 'extent', 'pred', 'error'] + list(evaldata.columns[5:-1]) + ['pred_hm']]
-        print(evaldata)
         return evaldata
     
     def plot_cmatrix(self, runpath):
