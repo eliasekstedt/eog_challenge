@@ -6,7 +6,6 @@ import torch.nn.functional as F
 from WF1_classifier.parts.Architectures import Architecture
 
 ###
-
 see = False
 if see:
     import matplotlib.pyplot as plt

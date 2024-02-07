@@ -8,6 +8,27 @@ for mode in modes:
             continue
         print(mode, fcv)"""
 
+"""
 lst = [1, 2, 3, 4, 5]
 a = (min(lst) + lst[len(lst)-3:])/2
 print(a)
+
+
+import numpy as np
+
+
+sd = np.sqrt(0.572014)
+val = np.random.normal(20, sd, int(1e6))
+print(len([v for v in val if v > 24])/len(val))
+
+"""
+import numpy as np
+
+tot = 22.95
+var = 0.572014
+
+opt = tot - 2*np.sqrt(var)
+p = tot + 2*np.sqrt(var)
+print(opt, p)
+
+
