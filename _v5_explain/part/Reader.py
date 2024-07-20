@@ -5,6 +5,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 from torchvision import transforms
 from part.CustomTransforms import CenterBlock, SegmentBlock
+
 image_size = 224
 def get_augmentations(augmentation, mode):
     selected = []
@@ -31,7 +32,8 @@ def get_augmentations(augmentation, mode):
     if mode in ['train', 'eval']:
         #selected += [transforms.Normalize(mean=[0.3993, 0.5501, 0.5837], std=[0.1351, 0.1436, 0.1429])] # synOC_new_rgb_train
         #selected += [transforms.Normalize(mean=[0.3908, 0.5422, 0.5751], std=[0.1302, 0.1391, 0.1383])] # synOC_extended_rgb
-        selected += [transforms.Normalize(mean=[0.4115, 0.4989, 0.5668], std=[0.2365, 0.1749, 0.1451])] # OC_256...mcd_tuning_tp0
+        #selected += [transforms.Normalize(mean=[0.4115, 0.4989, 0.5668], std=[0.2365, 0.1749, 0.1451])] # OC_256...mcd_tuning_tp0
+        selected += [transforms.Normalize(mean=[0.4467, 0.4443, 0.3265], std=[0.2368, 0.2382, 0.2752])] # eog_224, class 0 and class 1
     return transforms.Compose(selected)
 
 just_to_tensor = transforms.Compose([transforms.Resize(image_size), transforms.ToTensor()])
@@ -49,7 +51,7 @@ class Reader(Dataset):
     
     def __getitem__(self, idx):
         row = self.csv.iloc[idx]
-        im_name = row['Name']
+        im_name = row['address']
         image = Image.open(f"{self.path_im}{im_name}")
         if self.mode == 'sample': # creating sample.png
             image_aug = self.transforms(image)
@@ -59,7 +61,7 @@ class Reader(Dataset):
             image = self.transforms(image)
             return im_name, image
         else: # mode == train
-            label = torch.tensor([row['Label']])
+            label = torch.tensor([row['label']])
             label = torch.squeeze(label)
             image = self.transforms(image)
             return im_name, image, label
