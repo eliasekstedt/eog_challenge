@@ -1,6 +1,16 @@
 
 import os
 
+###
+import sys
+import numpy as np
+
+print("Python executable:", sys.executable)
+print("NumPy version:", np.__version__)
+###
+
+
+
 def main():
     ######### setable ############
     device = 'cuda:0'
@@ -8,9 +18,9 @@ def main():
     batch_size = 64
     nr_epochs = 2
     weight_decay = 3e-5
-    state_dict = 'history'
+    state_dict = ''
     new_map = False
-    eval_only = True
+    eval_only = False
     ##############################
     assert not (state_dict == '' and eval_only)
 
