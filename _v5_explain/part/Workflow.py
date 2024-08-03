@@ -38,7 +38,6 @@ class Workflow:
         assembly_ori = make_tensor_assembly(images_ori)
         assembly_aug = make_tensor_assembly(images_aug)
         divider = torch.zeros_like(assembly_ori)[:,:, :10]
-        #print(f"{assembly_ori.shape}\n{divider.shape}\n{assembly_aug.shape}");1/0
         full_assembly = torch.cat([assembly_ori, divider, assembly_aug], dim=2)
         import torchvision.transforms as transforms
         #from PIL import Image

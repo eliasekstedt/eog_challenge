@@ -30,9 +30,6 @@ def get_augmentations(augmentation, mode):
         selected += [transforms.CenterCrop(4*image_size//5)]
     selected += [transforms.ToTensor()]
     if mode in ['train', 'eval']:
-        #selected += [transforms.Normalize(mean=[0.3993, 0.5501, 0.5837], std=[0.1351, 0.1436, 0.1429])] # synOC_new_rgb_train
-        #selected += [transforms.Normalize(mean=[0.3908, 0.5422, 0.5751], std=[0.1302, 0.1391, 0.1383])] # synOC_extended_rgb
-        #selected += [transforms.Normalize(mean=[0.4115, 0.4989, 0.5668], std=[0.2365, 0.1749, 0.1451])] # OC_256...mcd_tuning_tp0
         selected += [transforms.Normalize(mean=[0.4467, 0.4443, 0.3265], std=[0.2368, 0.2382, 0.2752])] # eog_224, class 0 and class 1
     return transforms.Compose(selected)
 

@@ -22,7 +22,6 @@ class Evaluator:
                 outputs = model(image)
                 _positive = tuple([el[0].item() for el in outputs])
                 _negative = tuple([el[1].item() for el in outputs])
-                #print(f"{_row_id}\n{_normal_mild}\n{_moderate}\n{_severe}");1/0
                 if id is None:
                     id, positive, negative = _id, _positive, _negative
                 else:
@@ -45,9 +44,6 @@ class Evaluator:
         pred_data['prediction'] = pred_data.apply(get_prediction, axis=1)
         fold_data = pd.read_csv(foldpath)
         eval_data = pred_data.merge(fold_data, on='address', how='inner')
-        print(pred_data)
-        print(fold_data)
-        print(eval_data)
         return eval_data[['ID', 'positive', 'negative', 'prediction', 'label', 'extent', 'growth_stage', 'season', 'damage', 'address']]
         
     def get_cmatrix(self, eval_data):

@@ -2,25 +2,22 @@
 import os
 
 ###
-import sys
-import numpy as np
-
-print("Python executable:", sys.executable)
-print("NumPy version:", np.__version__)
+#import numpy as np
+#import sys
+#print("Python executable:", sys.executable)
+#print("NumPy version:", np.__version__)
 ###
-
-
 
 def main():
     ######### setable ############
     device = 'cuda:0'
-    tag = 'discard'
+    tag = 'explain_18'
     batch_size = 64
-    nr_epochs = 2
+    nr_epochs = 18
     weight_decay = 3e-5
-    state_dict = ''
+    state_dict = 'history'
     new_map = False
-    eval_only = False
+    eval_only = True
     ##############################
     assert not (state_dict == '' and eval_only)
 
@@ -41,12 +38,11 @@ def main():
         'state_dict':state_dict,
         }
     
-    
     hparam = {
         'batch_size': batch_size,
         'nr_epochs': nr_epochs,
         'weight_decay': weight_decay,
-        'use_penalty': True,
+        'use_penalty': True, # for class balance
         }
     
     augmentation = {

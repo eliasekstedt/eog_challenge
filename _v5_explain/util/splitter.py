@@ -1,10 +1,12 @@
 
 import pandas as pd
 
-
 class Splitter:
     def __init__(self, path_map, max=None):
-        self.csv = pd.read_csv(path_map)
+        if max:
+            self.csv = pd.read_csv(path_map)[:max]
+        else:
+            self.csv = pd.read_csv(path_map)
         self.trainsplit, self.valsplit = self.split()
         self.write()
 
