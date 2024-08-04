@@ -13,11 +13,11 @@ def main():
     device = 'cuda:0'
     tag = 'explain_18'
     batch_size = 64
-    nr_epochs = 18
+    nr_epochs = 5
     weight_decay = 3e-5
     state_dict = 'history'
     new_map = False
-    eval_only = True
+    eval_only = False
     ##############################
     assert not (state_dict == '' and eval_only)
 
